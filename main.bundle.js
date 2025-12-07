@@ -582,7 +582,7 @@ class MultiplayerClient {
     connect() {
         try {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            this.ws = new WebSocket(`${protocol}//${window.location.host}`);
+            this.ws = new WebSocket(`${protocol}//${"polyranked.cwcinc.dev"}`);
             // this.ws = new WebSocket("https://polytrackmultiplayer.onrender.com/");
 
             this.ws.binaryType = "arraybuffer";
@@ -30204,7 +30204,7 @@ function sendCarMultiplayerData(data, isPaused) {
         ,
         Rv.maxFrames = 5999999;
         const Lv = Rv;
-        var AudioFunctions, VisualCar3, localAudioManager, Uv, zv, Ov, Fv, Wv, collisionAudioState, hornAudioState, audioPanner, Gv, orbitCamera, orbitCameraBackwards, cockpitCamera, Kv, qv, lastUpdateTimestamp, deltaTimestamp, thisMainCarData, lastUpdatedPosition, Xv, Zv, Jv, $v, ew, tw, nw, iw, rw, aw, sw, ow, lw, cw, hw, dw, uw, pw, carStripeCanvas, storedCarStripeUvMap, mw, currentCarColors, hornColor, carStripeId, vw, ww, yw, bw, skidAudioSources, xw, kw, Ew, Sw, hornTypesMap, Mw, _w, Tw, Cw, Pw, Iw, updateAudio, Lw, Dw, Nw, updateCollisionAudio, playCollisionAudio, playSkidAudio, Ow, Fw, Ww, Hw = function(e, t, n, i) {
+        var AudioFunctions, VisualCar3, localAudioManager, Uv, zv, Ov, Fv, Wv, collisionAudioState, hornAudioState, audioPanner, Gv, orbitCamera, orbitCameraBackwards, cockpitCamera, Kv, qv, lastUpdateTimestamp, deltaTimestamp, thisMainCarData, lastUpdatedPosition, determinism, Xv, Zv, Jv, $v, ew, tw, nw, iw, rw, aw, sw, ow, lw, cw, hw, dw, uw, pw, carStripeCanvas, storedCarStripeUvMap, mw, currentCarColors, hornColor, carStripeId, vw, ww, yw, bw, skidAudioSources, xw, kw, Ew, Sw, hornTypesMap, Mw, _w, Tw, Cw, Pw, Iw, updateAudio, Lw, Dw, Nw, updateCollisionAudio, playCollisionAudio, playSkidAudio, Ow, Fw, Ww, Hw = function(e, t, n, i) {
             return new (n || (n = Promise))((function(r, a) {
                 function s(e) {
                     try {
