@@ -26433,7 +26433,7 @@ function sendCarMultiplayerData(data, isPaused) {
         if (!Number.isSafeInteger(wu) || wu < 1)
             throw new Error("package.json beta version property must be a positive integer");
         let yu = "";
-        const bu = fu.rE + yu
+        const versionNumber = fu.rE + yu
           , Au = fu.l$.M;
         if (!Number.isSafeInteger(Au) || Au < 1)
             throw new Error("package.json beta physicsVersion property must be a positive integer");
@@ -30204,7 +30204,7 @@ function sendCarMultiplayerData(data, isPaused) {
         ,
         Rv.maxFrames = 5999999;
         const Lv = Rv;
-        var AudioFunctions, VisualCar3, localAudioManager, Uv, zv, Ov, Fv, Wv, collisionAudioState, hornAudioState, audioPanner, Gv, orbitCamera, orbitCameraBackwards, cockpitCamera, Kv, qv, lastUpdateTimestamp, deltaTimestamp, thisMainCarData, lastUpdatedPosition, determinism, Xv, Zv, Jv, $v, ew, tw, nw, iw, rw, aw, sw, ow, lw, cw, hw, dw, uw, pw, carStripeCanvas, storedCarStripeUvMap, mw, currentCarColors, hornColor, carStripeId, vw, ww, yw, bw, skidAudioSources, xw, kw, Ew, Sw, hornTypesMap, setCustomCarStripeImage, Mw, _w, Tw, Cw, Pw, Iw, updateAudio, Lw, Dw, Nw, updateCollisionAudio, playCollisionAudio, playSkidAudio, Ow, Fw, Ww, Hw = function(e, t, n, i) {
+        var AudioFunctions, VisualCar3, localAudioManager, Uv, zv, Ov, Fv, Wv, collisionAudioState, hornAudioState, audioPanner, Gv, orbitCamera, orbitCameraBackwards, cockpitCamera, Kv, qv, lastUpdateTimestamp, deltaTimestamp, thisMainCarData, lastUpdatedPosition, determinism, Xv, Zv, Jv, $v, ew, tw, nw, iw, rw, aw, sw, ow, lw, cw, hw, dw, uw, pw, carStripeCanvas, storedCarStripeUvMap, mw, currentCarColors, hornColor, carStripeId, vw, ww, yw, bw, skidAudioSources, xw, kw, Ew, Sw, hornTypesMap, setCustomCarStripeImage, Mw, _w, Tw, Cw, Pw, Iw, updateAudio, Lw, Dw, Nw, updateCollisionAudio, playCollisionAudio, playSkidAudio, playHornAudio, Ow, Fw, Ww, Hw = function(e, t, n, i) {
             return new (n || (n = Promise))((function(r, a) {
                 function s(e) {
                     try {
@@ -31003,7 +31003,7 @@ function sendCarMultiplayerData(data, isPaused) {
             static initResources() {
                 return Hw(this, void 0, void 0, (function*() {
                     const e = yield new Promise(( (e, t) => {
-                        (new Al).load("models/rankedCar.glb", (n => {
+                        (new Al).load("models/car.glb", (n => {
                             function i(e) {
                                 const t = n.scene.getObjectByName(e);
                                 if (null == t)
@@ -32382,7 +32382,7 @@ function sendCarMultiplayerData(data, isPaused) {
             }
         }
         ;
-        var Yy, carObject, Zy, Jy, $y, eb, tb, nb, ib, rb, ab, sb, ob, lb, cb, carColorPickerArray, updatedCarCustomization, ub, createCarColorPicker, randomizeCarColors, getSelectedCarColors, gb, vb, saveCarColors, yb, set = function(e, t, n, i, r) {
+        var Yy, carObject, Zy, Jy, $y, eb, tb, nb, ib, rb, ab, sb, ob, lb, cb, carColorPickerArray, updatedCarCustomization, ub, createCarColorPicker, randomizeCarColors, switchWrap, getSelectedCarColors, getSelectedHorn, testHonk, getSelectedWrapId, setSelectedWrapId, setColorPickerColors, setSelectedHorn, gb, vb, saveCarColors, yb, set = function(e, t, n, i, r) {
             if ("m" === i)
                 throw new TypeError("Private method is not writable");
             if ("a" === i && !r)
@@ -34527,14 +34527,14 @@ function sendCarMultiplayerData(data, isPaused) {
         toByteArrayOG = function() {
             const e = [];
             e.push(this.environment),
-            e.push(get(this, yb, "f").representation);
+            e.push(get(this, rx, "f").representation);
             let t = 1 / 0
               , n = 1 / 0
               , i = 1 / 0
               , r = -1 / 0
               , a = -1 / 0
               , s = -1 / 0;
-            for (const [,e] of get(this, Ab, "f"))
+            for (const [,e] of get(this, ax, "f"))
                 for (const o of e)
                     t = Math.min(o.x, t),
                     n = Math.min(o.y, n),
@@ -34555,7 +34555,7 @@ function sendCarMultiplayerData(data, isPaused) {
               , d = Math.max(1, Math.min(4, Math.ceil(Math.log2(l + 1) / 8)))
               , u = Math.max(1, Math.min(4, Math.ceil(Math.log2(c + 1) / 8)));
             e.push(255 & t, t >>> 8 & 255, t >>> 16 & 255, t >>> 24 & 255, 255 & n, n >>> 8 & 255, n >>> 16 & 255, n >>> 24 & 255, 255 & i, i >>> 8 & 255, i >>> 16 & 255, i >>> 24 & 255, 255 & (h | d << 2 | u << 4));
-            for (const [r,a] of get(this, Ab, "f")) {
+            for (const [r,a] of get(this, ax, "f")) {
                 if (r >= 156) {
                     // console.log("Pillar removed");
                     continue;
@@ -40148,7 +40148,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 d.textContent = n.get("Leaderboard"),
                 EC(this, rC, "f").appendChild(d);
                 const u = document.createElement("h3")
-                  , p = bu.replace(/(\d+\.\d+)\.\d+/, "$1");
+                  , p = versionNumber.replace(/(\d+\.\d+)\.\d+/, "$1");
                 u.textContent = n.get("Version") + " " + p,
                 EC(this, rC, "f").appendChild(u),
                 kC(this, aC, document.createElement("div"), "f"),
@@ -44239,7 +44239,7 @@ function sendCarMultiplayerData(data, isPaused) {
             console.error(e)
         }
         let VD = !0;
-        var GD, jD, QD, KD, qD, primaryMenuDiv, XD, ZD, JD, $D, trackSelectionScreen, trackSelectionMenu, settingsMenu, iN, rN, aN, sN, oN, lN, cN, hN, dN, uN, pN, initTrackCategorySelectionScreen, generateMainMenuButtons2, generateCreditText, vN, showMainMenu, hidePolytrackLogo, showPolytrackLogo, AN, set = function(e, t, n, i, r) {
+        var GD, jD, QD, KD, qD, primaryMenuDiv, XD, ZD, JD, $D, trackSelectionScreen, trackSelectionMenu, settingsMenu, iN, rN, aN, sN, oN, lN, cN, hN, dN, uN, pN, initTrackCategorySelectionScreen, generateMainMenuButtons2, generateCreditText, vN, showMainMenu, hidePolytrackLogo, showPolytrackLogo, createRankedMenu, AN, set = function(e, t, n, i, r) {
             if ("m" === i)
                 throw new TypeError("Private method is not writable");
             if ("a" === i && !r)
@@ -44614,8 +44614,8 @@ function sendCarMultiplayerData(data, isPaused) {
             const playRankedText = document.createElement("p");
             playRankedText.textContent = "Ranked";
             playRankedButton.appendChild(playRankedText);
-            get(this, nD, "f").appendChild(playRankedButton);
-            get(this, iD, "f").push(playRankedButton);
+            get(this, oN, "f").appendChild(playRankedButton);
+            get(this, lN, "f").push(playRankedButton);
 
             if (window.electron) {
                 const e = document.createElement("button");
@@ -44662,7 +44662,7 @@ function sendCarMultiplayerData(data, isPaused) {
             const t = document.createElement("a");
             t.href = "https://www.kodub.com",
             t.target = "_blank",
-            t.textContent = "kodub.com - " + e.get("Version") + " " + bu,
+            t.textContent = "kodub.com - " + e.get("Version") + " " + versionNumber,
             get(this, JD, "f").appendChild(t);
             const n = document.createElement("a");
             n.href = "https://opengameart.org/content/sci-fi-theme-1",
@@ -47391,8 +47391,7 @@ function sendCarMultiplayerData(data, isPaused) {
             constructor() {
                 this.determinismState = HT.Uninitialized,
                 qU.set(this, 2e4),
-                YU.se
-                t(this, 1e4)
+                YU.set(this, 1e4)
             }
             getLeaderboard(userId, trackId, skip, amount, onlyVerified) {
                 return new Promise((resolve, reject) => {
@@ -53461,12 +53460,12 @@ function sendCarMultiplayerData(data, isPaused) {
                 const r = new nU
                   , a = new KU
                   , audioContext2 = new MainAudioContextClass(t);
-                audioContext2.load("music", ["audio/PolyRankedTheme.mp3", "audio/PolyRankedTheme.flac"]),
-                audioContext2.load("click", ["audio/click.flac"]),
-                audioContext2.load("engine", ["audio/engine.flac"]),
-                audioContext2.load("suspension", ["audio/suspension.flac"]),
-                audioContext2.load("tires", ["audio/tires.flac"]),
-                audioContext2.load("collision", ["audio/collision.flac"]),
+                audioContext2.load("music", ["audio/music.mp3"]),
+                audioContext2.load("click", ["audio/click.mp3"]),
+                audioContext2.load("engine", ["audio/engine.mp3"]),
+                audioContext2.load("suspension", ["audio/suspension.mp3"]),
+                audioContext2.load("tires", ["audio/tires.mp3"]),
+                audioContext2.load("collision", ["audio/collision.mp3"]),
                 //              HORNS    - cwcinc
                 audioContext2.load("honk1", ["audio/carHonk.flac"]),
                 audioContext2.load("honk2", ["audio/goofyHorn.flac"]),
@@ -53484,10 +53483,10 @@ function sendCarMultiplayerData(data, isPaused) {
                 audioContext2.load("honk14", ["audio/shipHorn.flac"]),
                 audioContext2.load("honk15", ["audio/duckyHorn.flac"]),
 
-                audioContext2.load("skidding", ["audio/skidding.flac"]),
-                audioContext2.load("editor_edit", ["audio/editor_edit.flac"]),
-                audioContext2.load("checkpoint", ["audio/checkpoint.flac"]),
-                audioContext2.load("finish", ["audio/checkpoint.flac"]),
+                audioContext2.load("skidding", ["audio/skidding.mp3"]),
+                audioContext2.load("editor_edit", ["audio/editor_edit.mp3"]),
+                audioContext2.load("checkpoint", ["audio/checkpoint.mp3"]),
+                audioContext2.load("finish", ["audio/checkpoint.mp3"]),
                 Sp.initResources(t),
                 Ox.initResources(t);
                 const o = new az(e)
