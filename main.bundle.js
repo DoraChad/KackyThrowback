@@ -1,7 +1,8 @@
-const modVersion = "0.4.0 - PolyRanked";
+const modVersion = "0.5.0 - PolyRanked";
 
 const serverUpdateHz = 15;
 const serverUpdateMs = Math.round(1000 / serverUpdateHz);
+const BYTES_PER_CAR = 17;
 
 var multiplayerEnabled = false;
 
@@ -18,6 +19,9 @@ var bombMainCar = (bombLocation) => {};
 var forceLoadTrack = (metadata, trackData, trackCategory, trackId, trackPreviewCanvas, loadingRanked, quickLoad) => {};
 
 var forceExitTrack = () => {};
+
+var quaternionToEuler = (q) => {};
+var eulerToQuaternion = (euler) => {};
 
 window.decodeTrackFromExportString = (trackCode) => {};
 
@@ -328,6 +332,12 @@ class MultiplayerClient {
 
         this.skinsUnlocked = 0;
         this.xpUpdateCallback = null;
+
+        this.nextCarIndexInMultiplayerMap = 0;
+        this.userIdToMultiplayerMapIndex = new Map();
+
+        this.trackLoadedCallback = null;
+        this.myCarMapId = null;
         
         this.connect();
     }
@@ -582,7 +592,7 @@ class MultiplayerClient {
     connect() {
         try {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            this.ws = new WebSocket(`${protocol}//${"polyranked.cwcinc.dev"}`);
+            this.ws = new WebSocket(`${protocol}//${window.location.host}`);
             // this.ws = new WebSocket("https://polytrackmultiplayer.onrender.com/");
 
             this.ws.binaryType = "arraybuffer";
@@ -645,35 +655,52 @@ class MultiplayerClient {
     static decodeCarData(data) {
         const view = new DataView(data);
             
-        const cars = {};
-        const BYTES_PER_CAR = 99;
+        const cars = [];
         if (data.byteLength % BYTES_PER_CAR !== 0) {
             console.warn("Invalid car data length:", data.byteLength);
             return cars;
         }
 
-        for (let i = 0; i < data.byteLength; i += BYTES_PER_CAR) {
-            // console.log(data);
-            let offset = i;
+        /*
 
-            const uidBytes = new Uint8Array(data, offset, 36);
-            const uid = new TextDecoder().decode(uidBytes).replace(/\0/g, ''); // remove padding nulls
-            offset += 36;
+        // Position (f16)
+        x, y, z
+        offset += 6;
 
-            let packedByte = view.getUint8(offset, !0);
-            offset += 1;
+        let packedByte = angleToInt(carEuler.x, 128);
+        if (car.brakeLightEnabled) packedByte |= 1 << 7;
+
+        view.setUint8(offset, packedByte, true);
+        view.setUint8(offset + 1, angleToInt(carEuler.y, 256), true);
+        view.setUint8(offset + 2, angleToInt(carEuler.z, 256), true);
+        offset += 3;
+
+        // view.setFloat32(offset, car.wheelRotation[0], true); offset += 4;
+
+        let suspensionInt = Math.min(15, Math.max(0, Math.floor(16 * (car.wheelSuspensionLength[0] / 0.16)))); // assuming suspension in range 0 - 0.15
+        // assuming steering angle in range -0.4 to 0.4
+        let steeringInt = Math.min(15, Math.max(0, Math.floor(16 * ((car.steeringAngle + 0.4) / 0.8))));
+
+        let packedWheelData = (suspensionInt << 4) | steeringInt;
+        view.setUint8(offset, packedWheelData, true); 
+        offset += 1;
+
+        */
+
+        let numCars = (data.byteLength / BYTES_PER_CAR);
+        for (let i = 0; i < numCars; i++) {
+            let offset = i * BYTES_PER_CAR;
+
             const carData = {
-                brakeLightEnabled: (packedByte & (1 << 0)) !== 0,
+                brakeLightEnabled: false,
                 controls: {
-                    up: (packedByte & (1 << 1)) !== 0,
-                    down: (packedByte & (1 << 2)) !== 0,
-                    left: (packedByte & (1 << 3)) !== 0,
-                    right: (packedByte & (1 << 4)) !== 0,
-                    reset: (packedByte & (1 << 5)) !== 0
+                    up: false,
+                    down: false,
+                    left: false,
+                    right: false,
+                    reset: false
                 }
             };
-
-            const isPaused = (packedByte & (1 << 6)) !== 0;
 
             carData.position = {
                 x: view.getFloat32(offset, !0),
@@ -682,131 +709,43 @@ class MultiplayerClient {
             };
             offset += 12;
 
-            carData.quaternion = {
-                x: view.getFloat32(offset, !0),
-                y: view.getFloat32(offset + 4, !0),
-                z: view.getFloat32(offset + 8, !0),
-                w: view.getFloat32(offset + 12, !0)
-            };
-            offset += 16;
-        
-            // carData.speedKmh = view.getFloat32(offset, !0);
-            // offset += 4;
-
-            carData.velocityVector = {
-                x: view.getFloat32(offset, !0),
-                y: view.getFloat32(offset + 4, !0),
-                z: view.getFloat32(offset + 8, !0)
-            };
-            offset += 12;
-
-            // carData.wheelPosition = [];
-            // carData.wheelQuaternion = [];
-            // carData.wheelRotation = [];
-            // carData.wheelSkidInfo = [];
-            // carData.wheelSuspensionLength = [];
-            // carData.wheelSuspensionVelocity = [];
-            // carData.wheelDeltaRotation = [];
-
-            // for (let wheel = 0; wheel < 4; wheel++) {
-            //     carData.wheelPosition.push({
-            //         x: view.getFloat32(offset, !0),
-            //         y: view.getFloat32(offset + 4, !0),
-            //         z: view.getFloat32(offset + 8, !0)
-            //     });
-            //     offset += 12;
-                
-            //     carData.wheelQuaternion.push({
-            //         x: view.getFloat32(offset, !0),
-            //         y: view.getFloat32(offset + 4, !0),
-            //         z: view.getFloat32(offset + 8, !0),
-            //         w: view.getFloat32(offset + 12, !0)
-            //     });
-            //     offset += 16;
-
-            //     carData.wheelRotation.push(view.getFloat32(offset, !0));
-            //     offset += 4;
-                
-            //     carData.wheelSkidInfo.push(view.getFloat32(offset, !0));
-            //     offset += 4;
-
-            //     carData.wheelSuspensionLength.push(view.getFloat32(offset, !0));
-            //     offset += 4;
-
-            //     carData.wheelSuspensionVelocity.push(view.getFloat32(offset, !0));
-            //     offset += 4;
-
-            //     carData.wheelDeltaRotation.push(view.getFloat32(offset, !0));
-            //     offset += 4;
-            // };
-
-            carData.singleWheelRotation = view.getFloat32(offset, !0);
+            let rotationAndPackedData = view.getUint32(offset, !0);
             offset += 4;
 
-            carData.singleWheelSuspensionLength = view.getFloat32(offset, !0);
-            offset += 4;
+            const eulerX = (rotationAndPackedData & 0x3FF) / 1024 * 2 * Math.PI;
+            const eulerY = ((rotationAndPackedData >> 10) & 0x3FF) / 1024 * 2 * Math.PI;
+            const eulerZ = ((rotationAndPackedData >> 20) & 0x3FF) / 1024 * 2 * Math.PI;
 
-            carData.steeringAngle = view.getFloat32(offset, !0);
-            offset += 4;
+            carData.brakeLightEnabled = (rotationAndPackedData & (1 << 30)) !== 0;
+            const isPaused = (rotationAndPackedData & (1 << 31)) !== 0;
 
-            // console.log(carData.wheelDeltaRotation);
+            carData.quaternion = eulerToQuaternion({
+                x: eulerX,
+                y: eulerY,
+                z: eulerZ
+            });
 
-            // console.log("decoded colors: ", colors);
-            // console.log("decoded offset: ", offset);
+            let packedWheelData = view.getUint8(offset++);
+            let suspensionInt = (packedWheelData & 0b11110000) >> 4;
+            let steeringInt = packedWheelData & 0b00001111;
 
-            // carData.collisionImpulses = [];
-            // carData.frames = 0;
-            // carData.id = 20;
-            // carData.nextCheckpointIndex = 0;
-            // carData.finishFrames = null;
+            carData.singleWheelSuspensionLength = (suspensionInt / 16) * 0.16; // assuming suspension in range 0 - 0.15
 
-            if (uid != "") {
-                cars[uid] = {data: carData, isPaused: isPaused};
-            } else {
-                console.log("blank user id");
-            }
+            carData.steeringAngle = (steeringInt / 16) * 0.8 - 0.4; // assuming steering angle in range -0.4 to 0.4
+            
+            cars.push({data: carData, isPaused: isPaused});
         }
 
         return cars;
     }
 
     static encodeSingleCarData(carState, userId) {
-        // data.position, data.quaternion, data.wheelRotation[0], data.steeringAngle || 0.3, data.brakeLightEnabled, data.velocityVector, data.wheelSuspensionLength[0]
-
-        const buf = new ArrayBuffer(99);
+        const buf = new ArrayBuffer(BYTES_PER_CAR); // 16 bytes per car
         const car = carState.data;
-        const isPaused = carState.isPaused;
         
         const view = new DataView(buf);
 
         let offset = 0;
-
-        // Write fixed-length UTF-8 userId (36 bytes)
-        const encodedUserId = (new TextEncoder()).encode(userId); // Get Uint8Array of bytes
-            
-        for (let i = 0; i < 36; i++) {
-            view.setUint8(offset + i, encodedUserId[i]);
-        }
-        offset += 36;
-
-
-        let packedByte = 0;
-        if (car.brakeLightEnabled) packedByte |= 1 << 0;
-        if (car.controls.up) packedByte |= 1 << 1;
-        if (car.controls.down) packedByte |= 1 << 2;
-        if (car.controls.left) packedByte |= 1 << 3;
-        if (car.controls.right) packedByte |= 1 << 4;
-        if (car.controls.reset) packedByte |= 1 << 5;
-        // if (car.wheelInContact[0]) packedByte |= 1 << 6;
-        // if (car.wheelInContact[1]) packedByte |= 1 << 7;
-        // if (car.wheelInContact[2]) packedByte |= 1 << 8;
-        // if (car.wheelInContact[3]) packedByte |= 1 << 9;
-        if (isPaused) packedByte |= 1 << 6; // 10;
-        // if (car.hasCheckpointToRespawnAt) packedByte |= 1 << 11;
-        // if (car.hasStarted) packedByte |= 1 << 12;
-
-        view.setInt8(offset, packedByte, true);
-        offset += 1;
 
         // Position
         view.setFloat32(offset, car.position.x, true);
@@ -814,78 +753,79 @@ class MultiplayerClient {
         view.setFloat32(offset + 8, car.position.z, true);
         offset += 12;
 
-        // Quaternion
-        view.setFloat32(offset, car.quaternion.x, true);
-        view.setFloat32(offset + 4, car.quaternion.y, true);
-        view.setFloat32(offset + 8, car.quaternion.z, true);
-        view.setFloat32(offset + 12, car.quaternion.w, true);
-        offset += 16;
+        let carEuler = quaternionToEuler(car.quaternion);
 
-        // Speed
-        // view.setFloat32(offset, car.speedKmh, true);
-        // offset += 4;
+        function angleToInt(angle, bound) {
+            // Convert from radians to degrees
+            let ratio = angle / (2 * Math.PI);
 
-        // Velocity vector
-        view.setFloat32(offset, car.velocityVector.x, true);
-        view.setFloat32(offset + 4, car.velocityVector.y, true);
-        view.setFloat32(offset + 8, car.velocityVector.z, true);
-        offset += 12;
+            // ensure ratio is between 0 and 1
+            ratio = ratio - Math.floor(ratio);
+            return ratio * bound;
+        }
 
-        // 82b before here
+        let rotationAndPackedData = 0;  // 4 bytes (32 bit) - 10 bit per rotation (1024 range), 2 for extra data
 
-        // for (let wheel = 0; wheel < 4; wheel++) {       // 48 per wheel, 192 total
-        //     view.setFloat32(offset, car.wheelPosition[wheel].x, true);
-        //     view.setFloat32(offset + 4, car.wheelPosition[wheel].y, true);
-        //     view.setFloat32(offset + 8, car.wheelPosition[wheel].z, true);
-        //     offset += 12;
+        let eulerX = angleToInt(carEuler.x, 1024);
+        let eulerY = angleToInt(carEuler.y, 1024);
+        let eulerZ = angleToInt(carEuler.z, 1024);
+        rotationAndPackedData |= (eulerX & 0x3FF) << 0;
+        rotationAndPackedData |= (eulerY & 0x3FF) << 10;
+        rotationAndPackedData |= (eulerZ & 0x3FF) << 20;
+        if (car.brakeLightEnabled) rotationAndPackedData |= 1 << 30;
+        if (car.isPaused) rotationAndPackedData |= 1 << 31;
 
-        //     view.setFloat32(offset, car.wheelQuaternion[wheel].x, true);
-        //     view.setFloat32(offset + 4, car.wheelQuaternion[wheel].y, true);
-        //     view.setFloat32(offset + 8, car.wheelQuaternion[wheel].z, true);
-        //     view.setFloat32(offset + 12, car.wheelQuaternion[wheel].w, true);
-        //     offset += 16;
+        view.setUint32(offset, rotationAndPackedData, true);
+        offset += 4;
 
-        //     view.setFloat32(offset, car.wheelRotation[wheel], true);
-        //     offset += 4;
+        // view.setFloat32(offset, car.wheelRotation[0], true); offset += 4;
 
-        //     view.setFloat32(offset, car.wheelSkidInfo[wheel], true);
-        //     offset += 4;
+        let suspensionInt = Math.min(15, Math.max(0, Math.floor(16 * (car.wheelSuspensionLength[0] / 0.16)))); // assuming suspension in range 0 - 0.15
+        // assuming steering angle in range -0.4 to 0.4
+        let steeringInt = Math.min(15, Math.max(0, Math.floor(16 * ((car.steeringAngle + 0.4) / 0.8))));
 
-        //     view.setFloat32(offset, car.wheelSuspensionLength[wheel], true);
-        //     offset += 4;
+        let packedWheelData = (suspensionInt << 4) | steeringInt;
+        view.setUint8(offset, packedWheelData, true); 
+        offset += 1;
 
-        //     view.setFloat32(offset, car.wheelSuspensionVelocity[wheel], true);
-        //     offset += 4;
-
-        //     view.setFloat32(offset, car.wheelDeltaRotation[wheel], true);
-        //     offset += 4;
-        // }
-
-        // 274b before here
-
-        view.setFloat32(offset, car.wheelRotation[0], true); offset += 4;
-        view.setFloat32(offset, car.wheelSuspensionLength[0], true); offset += 4;
-        view.setFloat32(offset, car.steeringAngle, true); offset += 4;
-
-        return buf; // 36+63b=99b total
+        return buf; // 10b total
     }
 
     handleBinary(data) {
-        // console.log(data);
         try {
             const cars = MultiplayerClient.decodeCarData(data);
-            // console.log("=====");
-            for (const [userId, carState] of Object.entries(cars)) {
-                // console.log(carState);
-                // console.log("Recieved", carState.data);
-                // console.log(carState);
-                if (!this.displaySelf && (userId == this.userId)) {continue};
-                // console.log(userId);
-                setLocalMultiplayerCarState(carState.data, carState.isPaused, userId);
+            if (cars.length != this.userIdToMultiplayerMapIndex.size) {
+                console.warn("Car count mismatch! Expected:", this.userIdToMultiplayerMapIndex.size, "Received:", cars.length);
+                return;
+            }
+            let activeCarIds = this.userIdToMultiplayerMapIndex.keys();
+            for (const carState of cars) {
+                const userId = activeCarIds.next().value;
+                if (!this.displaySelf && (userId == this.myCarMapId)) {continue};
+                const carIndex = this.userIdToMultiplayerMapIndex.get(userId.toString());
+
+                setLocalMultiplayerCarState(carState.data, carState.isPaused, carIndex);
             }
         } catch (e) {
             console.warn(e);
         };
+    }
+
+    initCarsInCurrentRoom() {
+        this.nextCarIndexInMultiplayerMap = 0;
+        this.userIdToMultiplayerMapIndex.clear();
+        for (let user of this.currentRoom.users) {
+            if (!this.displaySelf && user.id == this.userId) {
+                this.userIdToMultiplayerMapIndex.set(user.id.toString(), -1);
+                continue;
+            }
+            var colorString = user.carColors ? user.carColors : "000000000000000000000000"; // default black
+            var carWrapId = user.wrapId ? user.wrapId : 0;
+            createNewMultiplayerCar(this.nextCarIndexInMultiplayerMap, colorString, carWrapId);
+            this.userIdToMultiplayerMapIndex.set(user.id.toString(), this.nextCarIndexInMultiplayerMap);
+            this.nextCarIndexInMultiplayerMap++;
+        }
+        this.fillLb();
     }
 
     handleMessage(data) {
@@ -936,24 +876,12 @@ class MultiplayerClient {
                     this.proxy.pendingRequests.get(data.requestId).resolve(data.data);
                 }
                 break;
-
-            case 'room_created':
-                this.currentRoom = data.room;
-                this.addSystemMessage(`Room ${data.roomId} created successfully!`);
-                this.fillLb();
-                break;
                 
             case 'room_joined':
                 this.currentRoom = data.room;
                 this.addSystemMessage(`Joined room ${data.roomId}`);
 
-                for (let user of this.currentRoom.users) {
-                    if (user.id == this.userId) {continue;}
-                    var colorString = user.carColors ? user.carColors : "000000000000000000000000"; // default black
-                    var carWrapId = user.wrapId ? user.wrapId : 0;
-
-                    createNewMultiplayerCar(user.id, colorString, carWrapId);
-                }
+                this.initCarsInCurrentRoom();
 
                 this.fillLb();
                 break;
@@ -970,15 +898,22 @@ class MultiplayerClient {
 
                     var colorString = "000000000000000000000000"; // default black
                     var carWrapId = 0;
+                    let userFoundInRoom = false;
                     for (let user of this.currentRoom.users) {
                         if (user.id == data.userId) {
                             colorString = user.carColors;
                             carWrapId = user.wrapId;
+                            userFoundInRoom = true;
                             break;
                         }
                     }
+                    if (!userFoundInRoom) {
+                        console.warn("User joined but not found in room user list:", data.userId);
+                    }
 
-                    createNewMultiplayerCar(data.userId, colorString, carWrapId);
+                    createNewMultiplayerCar(this.nextCarIndexInMultiplayerMap, colorString, carWrapId);
+                    this.userIdToMultiplayerMapIndex.set(data.userId.toString(), this.nextCarIndexInMultiplayerMap);
+                    this.nextCarIndexInMultiplayerMap++;
                     this.fillLb();
                 }
                 break;
@@ -987,7 +922,7 @@ class MultiplayerClient {
                 if (this.currentRoom) {
                     this.currentRoom = data.room;
                     this.addSystemMessage(`${data.userName} left the room`);
-                    removeMultiplayerCar(data.userId);
+                    removeMultiplayerCar(this.userIdToMultiplayerMapIndex.get(data.userId.toString()));
                     this.fillLb();
                 }
                 break;
@@ -995,35 +930,19 @@ class MultiplayerClient {
             case 'spectate_joined':
                 this.currentRoom = data.room;
                 this.spectating = true;
-                forceLoadMainTrackById(data.trackId, true, true);
-                this.addSystemMessage(`Spectating room ${data.roomId}`);
-                this.initLb();
+                
+                this.trackLoadedCallback = () => {
+                    this.addSystemMessage(`Spectating room ${data.roomId}`);
+                    this.initLb();
 
-                function createCarsAndInitLb() {
-                    for (let user of this.currentRoom.users) {
-                        if (user.id == this.userId) {continue;}
-                        var colorString = user.carColors ? user.carColors : "000000000000000000000000"; // default black
-                        var carWrapId = user.wrapId ? user.wrapId : 0;
-                        createNewMultiplayerCar(user.id, colorString, carWrapId);
-                    }
+                    this.initCarsInCurrentRoom();
                     this.fillLb();
-                }
 
-                var createCarsInterval = setInterval(() => {
-                    if (globalCarManagerReference) {
-                        createCarsAndInitLb.call(this);
-                        clearInterval(createCarsInterval);
-                        createCarsInterval = null;
-                    }
-                }, 100);
+                    this.trackLoadedCallback = null;
+                };
 
-                setTimeout(() => {
-                    if (createCarsInterval) {
-                        clearInterval(createCarsInterval);
-                        console.warn("Spectate failed.");
-                    }
-                }, 3000);
-
+                forceLoadMainTrackById(data.trackId, true, true);
+                
                 break;
 
             case 'room_message':
@@ -1035,18 +954,6 @@ class MultiplayerClient {
                     this.currentRoom = data.room
                     this.fillLb();
                 }
-                break;
-
-            case 'car_updates':
-                // console.log("car_updates data: ", data.data);
-                try {
-                    for (const [userId, carState] of Object.entries(data.data)) {
-                        if (userId == this.userId) {continue;}
-                        setLocalMultiplayerCarState(carState.data, carState.isPaused, userId);
-                    }
-                } catch (e) {
-                    console.warn(e);
-                };
                 break;
             
             case 'bomb_car':
@@ -8392,6 +8299,21 @@ function sendCarMultiplayerData(data, isPaused) {
             s: 0,
             l: 0
         };
+
+        quaternionToEuler = (q) => {
+            const quaternion = new Quaternion(q.x, q.y, q.z, q.w);
+            const euler = new Euler();
+            euler.setFromQuaternion(quaternion, 'XYZ');
+            return euler;
+        };
+
+        eulerToQuaternion = (e) => {
+            const euler = new Euler(e.x, e.y, e.z, 'XYZ');
+            const quaternion = new Quaternion();
+            quaternion.setFromEuler(euler);
+            return quaternion;
+        };
+
         function Wi(e, t, n) {
             return n < 0 && (n += 1),
             n > 1 && (n -= 1),
@@ -27246,7 +27168,7 @@ function sendCarMultiplayerData(data, isPaused) {
             }
         }
         Fp = new WeakMap;
-        const timeObject = Vp;
+        const TimeObject = Vp;
         function jp(e) {
             let t = e.length;
             for (; --t >= 0; )
@@ -30204,7 +30126,7 @@ function sendCarMultiplayerData(data, isPaused) {
         ,
         Rv.maxFrames = 5999999;
         const Lv = Rv;
-        var AudioFunctions, VisualCar3, localAudioManager, Uv, zv, Ov, Fv, Wv, collisionAudioState, hornAudioState, audioPanner, Gv, orbitCamera, orbitCameraBackwards, cockpitCamera, Kv, qv, lastUpdateTimestamp, deltaTimestamp, thisMainCarData, lastUpdatedPosition, determinism, Xv, Zv, Jv, $v, ew, tw, nw, iw, rw, aw, sw, ow, lw, cw, hw, dw, uw, pw, carStripeCanvas, storedCarStripeUvMap, mw, currentCarColors, hornColor, carStripeId, vw, ww, yw, bw, skidAudioSources, xw, kw, Ew, Sw, hornTypesMap, setCustomCarStripeImage, Mw, _w, Tw, Cw, Pw, Iw, updateAudio, Lw, Dw, Nw, updateCollisionAudio, playCollisionAudio, playSkidAudio, playHornAudio, Ow, Fw, Ww, Hw = function(e, t, n, i) {
+        var AudioFunctions, VisualCar3, localAudioManager, Uv, zv, Ov, Fv, Wv, collisionAudioState, hornAudioState, audioPanner, Gv, orbitCamera, orbitCameraBackwards, cockpitCamera, Kv, qv, lastUpdateTimestamp, deltaTimestamp, thisMainCarData, lastUpdatedPosition, determinism, Xv, Zv, Jv, $v, ew, tw, nw, iw, rw, aw, sw, ow, lw, cw, hw, dw, uw, pw, carStripeCanvas, carStripeCanvas, storedCarStripeUvMap, mw, currentCarColors, hornColor, carStripeId, vw, ww, yw, bw, skidAudioSources, xw, kw, Ew, Sw, hornTypesMap, setCustomCarStripeImage, Mw, _w, Tw, Cw, Pw, Iw, updateAudio, Lw, Dw, Nw, updateCollisionAudio, playCollisionAudio, playSkidAudio, playHornAudio, Ow, Fw, Ww, Hw = function(e, t, n, i) {
             return new (n || (n = Promise))((function(r, a) {
                 function s(e) {
                     try {
@@ -30329,6 +30251,8 @@ function sendCarMultiplayerData(data, isPaused) {
                 this.latestCarOrientation = null,
                 this.deltatimeCounter = 0,
 
+                this.wheelRotation = 0,
+
                 set(this, localAudioManager, a, "f"),
                 set(this, lw, r, "f"),
                 set(this, vw, s, "f"),
@@ -30394,8 +30318,7 @@ function sendCarMultiplayerData(data, isPaused) {
                             down: !1,
                             left: !1,
                             reset: !1
-                        },
-                        velocityVector: {x:0,y:0,z:0}
+                        }
                     }, "f")
                 }
                 if (set(this, Xv, i, "f"),
@@ -30544,13 +30467,13 @@ function sendCarMultiplayerData(data, isPaused) {
                 return null != get(this, thisMainCarData, "f").finishFrames
             }
             getFinishTime() {
-                return null == get(this, thisMainCarData, "f").finishFrames ? null : new timeObject(get(this, thisMainCarData, "f").finishFrames)
+                return null == get(this, thisMainCarData, "f").finishFrames ? null : new TimeObject(get(this, thisMainCarData, "f").finishFrames)
             }
             getRecording() {
                 return get(this, Jv, "f")
             }
             getTime() {
-                return new timeObject(get(this, thisMainCarData, "f").frames)
+                return new TimeObject(get(this, thisMainCarData, "f").frames)
             }
             getNextCheckpointIndex() {
                 return get(this, thisMainCarData, "f").nextCheckpointIndex
@@ -30597,8 +30520,10 @@ function sendCarMultiplayerData(data, isPaused) {
                     new Vector3(-.720832,.27 - suspensionLength,-1.52686).applyQuaternion(carQuat).add(carPosition)
                 ];
 
+                this.wheelRotation += relativeWheelRotation;
+
                 const wheelSteeringQuaternion = (new Quaternion).setFromEuler(new Euler(0,steeringAngle,0));
-                const wheelRotationQuaternion = (new Quaternion).setFromEuler(new Euler(-1 * relativeWheelRotation,0,0));
+                const wheelRotationQuaternion = (new Quaternion).setFromEuler(new Euler(-1 * this.wheelRotation,0,0));
                 
                 const baseWheelQuaternion = (new Quaternion(0,0,0,1)).multiply(carQuat).multiply(new Quaternion(0,1,0,0)).multiply(wheelRotationQuaternion);
                 const frontWheelQuaternion = (new Quaternion(0,0,0,1)).multiply(carQuat).multiply(new Quaternion(0,1,0,0)).multiply(wheelSteeringQuaternion).multiply(wheelRotationQuaternion);
@@ -30629,8 +30554,14 @@ function sendCarMultiplayerData(data, isPaused) {
                 let latestPos = new Vector3(this.latestCarOrientation.position.x, this.latestCarOrientation.position.y, this.latestCarOrientation.position.z);
                 let interpolatedPos = previousPos.lerp(latestPos, t);
 
+                let wheelRadius = .331;
+
+                // Find the dot product of car movement with car forward direction
+                let carForward = new Vector3(0, 0, 1).applyQuaternion(interpolatedQuat);
+                let movementDirection = latestPos.clone().sub(previousPos);
+                let dotProduct = carForward.dot(movementDirection);
+
                 let interpolatedSteeringAngle = this.previousCarOrientation.steeringAngle + (this.latestCarOrientation.steeringAngle - this.previousCarOrientation.steeringAngle) * t;
-                let interpolatedRelativeWheelRotation = this.previousCarOrientation.relativeWheelRotation + (this.latestCarOrientation.relativeWheelRotation - this.previousCarOrientation.relativeWheelRotation) * t;
                 let interpolatedSuspensionLength = this.previousCarOrientation.suspensionLength + (this.latestCarOrientation.suspensionLength - this.previousCarOrientation.suspensionLength) * t;
 
                 this.weakSetOrientation({
@@ -30764,7 +30695,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 get(this, cw, "f").visible = e
             }
 
-            lightModifyMainCarData(carPosition, carQuaternion, relativeWheelRotation, steeringAngle, brakeLightEnabled, velocityVector, suspensionLength) {
+            lightModifyMainCarData(carPosition, carQuaternion, steeringAngle, brakeLightEnabled, suspensionLength) {
                 const carQuat = new Quaternion(carQuaternion.x, carQuaternion.y, carQuaternion.z, carQuaternion.w);
                 const wheelPositions = [
                     new Vector3(.627909,.27 - suspensionLength,1.3478).applyQuaternion(carQuat).add(carPosition), 
@@ -30772,6 +30703,8 @@ function sendCarMultiplayerData(data, isPaused) {
                     new Vector3(.720832,.27 - suspensionLength,-1.52686).applyQuaternion(carQuat).add(carPosition), 
                     new Vector3(-.720832,.27 - suspensionLength,-1.52686).applyQuaternion(carQuat).add(carPosition)
                 ];
+
+                let relativeWheelRotation = 0;
 
                 const wheelSteeringQuaternion = (new Quaternion).setFromEuler(new Euler(0,steeringAngle,0));
                 const wheelRotationQuaternion = (new Quaternion).setFromEuler(new Euler(-1 * relativeWheelRotation,0,0));
@@ -30800,7 +30733,6 @@ function sendCarMultiplayerData(data, isPaused) {
                         z: carQuaternion.z,
                         w: carQuaternion.w
                     },
-                    relativeWheelRotation,
                     steeringAngle,
                     suspensionLength
                 };
@@ -30842,8 +30774,7 @@ function sendCarMultiplayerData(data, isPaused) {
                         down: !1,
                         left: !1,
                         reset: !1
-                    },
-                    velocityVector: velocityVector
+                    }
                 }, "f");
             }
             setCarStateEfficient(carData) {
@@ -41095,7 +41026,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 return e >= 0 && e < AP(this, bP, "f").length ? AP(this, bP, "f")[e] : null
             }
             getLastFrame() {
-                return 0 == AP(this, bP, "f").length ? new timeObject(0) : new timeObject(AP(this, bP, "f")[AP(this, bP, "f").length - 1].frames)
+                return 0 == AP(this, bP, "f").length ? new TimeObject(0) : new TimeObject(AP(this, bP, "f")[AP(this, bP, "f").length - 1].frames)
             }
         }
         ;
@@ -41732,33 +41663,26 @@ function sendCarMultiplayerData(data, isPaused) {
                  * l: object of class ZB    - settings and keybind manager
                  */
             setLocalMultiplayerCarState = (data, isPaused, senderId) => {   // important multiplayer - cwcinc
-                if (senderId == "") {
+                if (senderId == -1) {
                     return;
                 };
-
-                // console.log(multiplayerCarMap, senderId, data, newColors);
-
-                if (!get(globalCarManagerReference, multiplayerCarMap, "f").has(senderId)) {
-                    // console.warn("User has no car!! Creating...");
-                    // createNewMultiplayerCar(senderId, newColors, carWrapId);
-                };
                 
-                const thisCar = get(globalCarManagerReference, multiplayerCarMap, "f").get(senderId);
+                const thisCar = get(globalCarManagerReference, multiplayerCarMap, "f").get(senderId.toString());
 
                 if (!thisCar) {
-                    console.warn("A multiplayer car is uninitialized.");
+                    console.warn("A multiplayer car is uninitialized. (id " + senderId + ")");
                     return;
                 }
                 // thisCar.setColors(newColors);
 
                 // get(this, multiplayerCar, "f").setCarState(testData);
                 // thisCar.setCarStateEfficient(data);
-                thisCar.lightModifyMainCarData(data.position, data.quaternion, data.singleWheelRotation, data.steeringAngle || 0, data.brakeLightEnabled, data.velocityVector, data.singleWheelSuspensionLength);
+                thisCar.lightModifyMainCarData(data.position, data.quaternion, data.steeringAngle || 0, data.brakeLightEnabled, data.singleWheelSuspensionLength);
                 thisCar.weaklySetPaused(isPaused);
             };
 
             playLocalMultiplayerCarHorn = (senderId, hornId) => {
-                const thisCar = get(globalCarManagerReference, multiplayerCarMap, "f").get(senderId);
+                const thisCar = get(globalCarManagerReference, multiplayerCarMap, "f").get(window.multiplayerClient.userIdToMultiplayerMapIndex.get(senderId).toString());
                 thisCar.playHornSound(hornId);
             }
         },
@@ -41802,11 +41726,11 @@ function sendCarMultiplayerData(data, isPaused) {
                 newCar.setCarStripeId(carWrapId);
             }
 
-            if (get(globalCarManagerReference, multiplayerCarMap, "f").has(playerId)) {
+            if (get(globalCarManagerReference, multiplayerCarMap, "f").has(playerId.toString())) {
                 console.warn("Removing duplicate car!");
                 this.removeMultiplayerCar(playerId);
             };
-            get(globalCarManagerReference, multiplayerCarMap, "f").set(playerId, newCar);
+            get(globalCarManagerReference, multiplayerCarMap, "f").set(playerId.toString(), newCar);
     
             newCar.notificationAudioEnabled = !0
             
@@ -41821,7 +41745,7 @@ function sendCarMultiplayerData(data, isPaused) {
             // set(this, GC, null, "f")
         },
         removeMultiplayerCar = function(playerId) {
-            let multiplayerCar = get(globalCarManagerReference, multiplayerCarMap, "f").get(playerId);
+            let multiplayerCar = get(globalCarManagerReference, multiplayerCarMap, "f").get(playerId.toString());
             if (!multiplayerCar) {
                 return;
             };
@@ -41832,7 +41756,14 @@ function sendCarMultiplayerData(data, isPaused) {
                 multiplayerCar.carId = null;
             }
 
-            get(globalCarManagerReference, multiplayerCarMap, "f").delete(playerId);
+            get(globalCarManagerReference, multiplayerCarMap, "f").delete(playerId.toString());
+
+            // delete entries in userIdToMultiplayerMapIndex where value = playerId
+            for (const [userId, mapIndex] of window.multiplayerClient.userIdToMultiplayerMapIndex.entries()) {
+                if (mapIndex == playerId) {
+                    window.multiplayerClient.userIdToMultiplayerMapIndex.delete(userId);
+                }
+            }
         },
         setupDrivingGhostCars = function() {
             var e;
@@ -41861,7 +41792,7 @@ function sendCarMultiplayerData(data, isPaused) {
                                 ghostReplay.push(ghostRun);
                                 if (ghostRun.nextCheckpointIndex > a) {
                                     ghostCpTimes.push({
-                                        time: new timeObject(ghostRun.frames),
+                                        time: new TimeObject(ghostRun.frames),
                                         speedKmh: ghostRun.speedKmh
                                     });
                                     a = ghostRun.nextCheckpointIndex;
@@ -41875,7 +41806,7 @@ function sendCarMultiplayerData(data, isPaused) {
                             })
                         );
                         ghostReplay.push(s),
-                        get(this, mI, "f").startCar(s.id, new timeObject(e)),
+                        get(this, mI, "f").startCar(s.id, new TimeObject(e)),
                         ghostCar.carId = s.id,
                         ghostCar.loadedFrames = 0,
                         ghostCar.maxFrames = e,
@@ -42382,9 +42313,6 @@ function sendCarMultiplayerData(data, isPaused) {
                         car.setOpacity(carOpacity);
                     };
                     if (get(this, settingsManager, "f").getSettingBoolean($o.MultiplayerSmoothingEnabled) && !carPaused) {
-                        // const carVelocityData = car.getVelocityVector();
-                        // const carVelocityVector = new Vector3(carVelocityData.x, carVelocityData.y, carVelocityData.z);
-                        // car.translateCar(carVelocityVector.multiplyScalar(deltaTime));
 
                         car.interpolateMovement(deltaTime);
                     };
@@ -43390,6 +43318,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 DL.set(this, void 0),
                 NL.set(this, void 0),
                 menuWatchButton.set(this, void 0),
+                menuStartMultiplayerButton.set(this, void 0),
                 UL.set(this, void 0),
                 zL.set(this, void 0),
                 OL.set(this, null),
@@ -44239,7 +44168,7 @@ function sendCarMultiplayerData(data, isPaused) {
             console.error(e)
         }
         let VD = !0;
-        var GD, jD, QD, KD, qD, primaryMenuDiv, XD, ZD, JD, $D, trackSelectionScreen, trackSelectionMenu, settingsMenu, iN, rN, aN, sN, oN, lN, cN, hN, dN, uN, pN, initTrackCategorySelectionScreen, generateMainMenuButtons2, generateCreditText, vN, showMainMenu, hidePolytrackLogo, showPolytrackLogo, createRankedMenu, AN, set = function(e, t, n, i, r) {
+        var GD, jD, QD, KD, qD, primaryMenuDiv, XD, ZD, JD, $D, trackSelectionScreen, trackSelectionMenu, settingsMenu, rankedMenu, iN, rN, aN, sN, oN, lN, cN, hN, dN, uN, pN, initTrackCategorySelectionScreen, generateMainMenuButtons2, generateCreditText, vN, showMainMenu, hidePolytrackLogo, showPolytrackLogo, createRankedMenu, AN, set = function(e, t, n, i, r) {
             if ("m" === i)
                 throw new TypeError("Private method is not writable");
             if ("a" === i && !r)
@@ -44267,6 +44196,7 @@ function sendCarMultiplayerData(data, isPaused) {
         trackSelectionScreen = new WeakMap,
         trackSelectionMenu = new WeakMap,
         settingsMenu = new WeakMap,
+        rankedMenu = new WeakMap,
         iN = new WeakMap,
         rN = new WeakMap,
         aN = new WeakMap,
@@ -44668,7 +44598,17 @@ function sendCarMultiplayerData(data, isPaused) {
             n.href = "https://opengameart.org/content/sci-fi-theme-1",
             n.target = "_blank",
             n.textContent = 'OpenGameArt.org "Sci-fi Theme" by Maou (CC-BY 4.0)',
-            get(this, JD, "f").appendChild(n),
+            get(this, JD, "f").appendChild(n);
+            const shovelCredit = document.createElement("a");
+            shovelCredit.href = "https://sh0velfish.itch.io/",
+            shovelCredit.target = "_blank",
+            shovelCredit.textContent = 'Wraps by Shovelfish',
+            get(this, JD, "f").appendChild(shovelCredit);
+            const cwcCredit = document.createElement("a");
+            cwcCredit.href = "https://cwcinc.itch.io/",
+            cwcCredit.target = "_blank",
+            cwcCredit.textContent = 'Multiplayer Mod by Cwcinc',
+            get(this, JD, "f").appendChild(cwcCredit);
             get(this, JD, "f").appendChild(document.createElement("br"));
             const i = document.createElement("a");
             i.href = "https://www.kodub.com/privacy/polytrack",
@@ -44764,6 +44704,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 trackSelectionScreen.set(this, void 0),
                 trackSelectionMenu.set(this, null),
                 settingsMenu.set(this, null),
+                rankedMenu.set(this, null),
                 iN.set(this, null),
                 rN.set(this, null),
                 aN.set(this, null),
@@ -46657,7 +46598,7 @@ function sendCarMultiplayerData(data, isPaused) {
                     const c = Number.parseInt(s.frames, 10);
                     if (!Number.isSafeInteger(c))
                         return null;
-                    const h = new timeObject(c);
+                    const h = new TimeObject(c);
                     if (!("recording"in s))
                         return null;
                     const d = Lv.deserialize(s.recording);
@@ -48423,7 +48364,7 @@ function sendCarMultiplayerData(data, isPaused) {
                             trackData: n.data,
                             recordingId: e,
                             recording: Lv.deserialize(t),
-                            time: new timeObject(i)
+                            time: new TimeObject(i)
                         })))), "f"),
                         i ? (n.timeout = new Date(t.getTime() + Math.floor(432e5 + 12 * Math.random() * 60 * 60 * 1e3)),
                         n.estimatedRemaining = e.length,
@@ -52497,7 +52438,7 @@ function sendCarMultiplayerData(data, isPaused) {
         pF = function(e) {
             const t = get(this, nF, "f").getBoundingClientRect()
               , n = (e.clientX - t.left) / (t.width - 8)
-              , i = new timeObject(Math.max(0, Math.min(get(this, lF, "f").numberOfFrames, Math.floor(n * get(this, lF, "f").numberOfFrames))));
+              , i = new TimeObject(Math.max(0, Math.min(get(this, lF, "f").numberOfFrames, Math.floor(n * get(this, lF, "f").numberOfFrames))));
             get(this, $O, "f").call(this, i)
         }
         ,
@@ -52561,7 +52502,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 get(this, tF, "f").className = "button",
                 get(this, tF, "f").addEventListener("click", ( () => {
                     e.playUIClick(),
-                    get(this, oF, "f") ? (get(this, $O, "f").call(this, new timeObject(0)),
+                    get(this, oF, "f") ? (get(this, $O, "f").call(this, new TimeObject(0)),
                     this.isPaused = !1) : this.isPaused = !this.isPaused
                 }
                 )),
@@ -52758,7 +52699,7 @@ function sendCarMultiplayerData(data, isPaused) {
                     for (const e of rW(this, FF, "f"))
                         e.car.update(0);
                     const a = rW(this, FF, "f")[rW(this, OF, "f")].car;
-                    null != rW(this, QF, "f") && (rW(this, QF, "f").time = new timeObject(r)),
+                    null != rW(this, QF, "f") && (rW(this, QF, "f").time = new TimeObject(r)),
                     null === (t = rW(this, qF, "f")) || void 0 === t || t.update(a.getControls()),
                     null === (n = rW(this, YF, "f")) || void 0 === n || n.update(a),
                     null === (i = rW(this, XF, "f")) || void 0 === i || i.update(a)
@@ -52854,7 +52795,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 const p = t.getStartTransform();
                 if (null == p)
                     throw new Error("Track has no starting point");
-                const f = new timeObject(d.reduce(( (e, t) => Math.max(e, t.time.numberOfFrames + rW(this, eW, "f"))), 0));
+                const f = new TimeObject(d.reduce(( (e, t) => Math.max(e, t.time.numberOfFrames + rW(this, eW, "f"))), 0));
                 iW(this, VF, f.time, "f"),
                 iW(this, FF, d.map(( (n, i) => {
                     const r = new VisualCar2(null,p,n.recording,null,o,l,a,t,h);
@@ -52871,7 +52812,7 @@ function sendCarMultiplayerData(data, isPaused) {
                         s.replay.push(t),
                         null != s.carId && t.frames >= f.numberOfFrames && (e.deleteCar(s.carId),
                         s.carId = null),
-                        t.nextCheckpointIndex > c.nextCheckpointIndex && (s.checkpointTimes.push(new timeObject(t.frames)),
+                        t.nextCheckpointIndex > c.nextCheckpointIndex && (s.checkpointTimes.push(new TimeObject(t.frames)),
                         i == rW(this, OF, "f") && null != rW(this, QF, "f") && (rW(this, QF, "f").checkpointTimes = s.checkpointTimes)),
                         c = t
                     }
@@ -52971,7 +52912,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 let o = 1 / 0;
                 for (const e of rW(this, FF, "f"))
                     o = Math.min(o, e.replay.getLastFrame().numberOfFrames);
-                const l = new timeObject(o);
+                const l = new TimeObject(o);
                 let c;
                 if (rW(this, WF, "f") || (null === (t = rW(this, QF, "f")) || void 0 === t ? void 0 : t.isDragging)) {
                     c = 0;
