@@ -1,6 +1,7 @@
 let carStripeCanvas;
 let hornColor;
 let carStripeId;
+let visualCar_carWrapId = 0;
 
 const modVersion = "0.5.0 - PolyRanked";
 
@@ -15904,6 +15905,18 @@ function sendCarMultiplayerData(data, isPaused) {
                     t.start(0)
                 }
             }
+            playTestHorn(hornId) {
+                const e = this.getBuffer("honk" + hornId);
+                if (null != e && null != this.context && null != this.destinationSfx) {
+                    const t = this.context.createBufferSource();
+                    t.buffer = e;
+                    const n = this.context.createGain();
+                    n.gain.value = 1,
+                    t.connect(n),
+                    n.connect(this.destinationSfx),
+                    t.start(0)
+                }
+            }
             refreshListener(e) {
                 if (null != this.context) {
                     const t = new Vector3
@@ -30178,6 +30191,7 @@ function sendCarMultiplayerData(data, isPaused) {
         };
         class VisualCar {
             constructor(e, startTransform, n, i, r, a, s, o, l, carWrapId=0) {
+                visualCar_carWrapId = carWrapId;
                 var c;
                 if (AudioFunctions.add(this),
                 localAudioManager.set(this, void 0),
@@ -30666,6 +30680,10 @@ function sendCarMultiplayerData(data, isPaused) {
                 if (null == n)
                     throw new Error("Failed to get context for car texture");
 
+                carStripeCanvas = n;
+                hornColor = new Color(0,0,0);
+                carStripeId = visualCar_carWrapId;
+                
                 const i = new Texture(t);
                 return i.flipY = !1,
                 i.anisotropy = e.getMaxAnisotropy(),
@@ -30674,16 +30692,11 @@ function sendCarMultiplayerData(data, isPaused) {
                 n.drawImage(VisualCar3.images.stripe, 0, 0, n.canvas.width, n.canvas.height),
                 i.needsUpdate = !0,
                 i
-                
-                carStripeCanvas = n;
 
                 const carStripeUvMap = new Texture(t);
                 return carStripeUvMap.flipY = !1,
                 carStripeUvMap.anisotropy = e.getMaxAnisotropy(),
                 carStripeUvMap.needsUpdate = !0,
-
-                hornColor = new Color(0,0,0);
-                carStripeId = carWrapId;
 
                 carStripeCanvas.clearRect(0, 0, carStripeCanvas.canvas.width, carStripeCanvas.canvas.height),
                 carStripeCanvas.drawImage(VisualCar3.images.stripe, 0, 0, carStripeCanvas.canvas.width, carStripeCanvas.canvas.height),
@@ -32657,16 +32670,22 @@ function sendCarMultiplayerData(data, isPaused) {
                 get(this, Yy, "m", createCarColorPicker).call(this, t.get("Secondary")),
                 get(this, Yy, "m", createCarColorPicker).call(this, t.get("Frame")),
                 get(this, Yy, "m", createCarColorPicker).call(this, t.get("Rims")),
+                get(this, Yy, "m", createCarColorPicker).call(this, "Horn", () => {get(this, Yy, "m", testHonk).call(this, i)}),
                 get(this, nb, "f").appendChild(get(this, sb, "f"));
+                
                 const f = get(this, eb, "f").getCurrentUserProfile().carColors;
                 get(this, Yy, "m", setColorPickerColors).call(this, f);
+                
                 const hornCol = get(this, eb, "f").getCurrentUserProfile().hornColor;
                 get(this, Yy, "m", setSelectedHorn).call(this, hornCol);
+                
                 const wrapId = get(this, eb, "f").getCurrentUserProfile().carStripeId;
                 get(this, Yy, "m", setSelectedHorn).call(this, hornCol);
-                get(this, carObject, "f").setColors(f),
-                get(this, carObject, "f").setHorn(hornCol),
-                get(this, carObject, "f").setCarStripeId(wrapId),
+
+                get(this, carObject, "f").setColors(f);
+                
+                get(this, carObject, "f").setHorn(hornCol);
+                get(this, carObject, "f").setCarStripeId(wrapId);
                 set(this, updatedCarCustomization, !1, "f");
 
                 const battlePass = document.createElement("div");
@@ -32687,7 +32706,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 battlePass.appendChild(battlePassCarSelectionDiv);
 
                 battlePass.style.display = "none";
-                get(this, Py, "f").appendChild(battlePass);
+                get(this, nb, "f").appendChild(battlePass);
 
                 // add wraps
                 
@@ -44892,9 +44911,10 @@ function sendCarMultiplayerData(data, isPaused) {
             cwcCredit.href = "https://cwcinc.itch.io/",
             cwcCredit.target = "_blank",
             cwcCredit.textContent = 'Multiplayer Mod by Cwcinc';
+            get(this, JD, "f").appendChild(cwcCredit);
             const doraCredit = document.createElement("a");
             doraCredit.target = "_blank",
-            doraCredit.textContent = 'UI by DoraChad😛',
+            doraCredit.textContent = 'Mod by DoraChad😛',
             get(this, JD, "f").appendChild(doraCredit);
             get(this, JD, "f").appendChild(document.createElement("br"));
             const i = document.createElement("a");
