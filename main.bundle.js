@@ -592,7 +592,7 @@ class MultiplayerClient {
     connect() {
         try {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            this.ws = new WebSocket(`${protocol}//${window.location.host}`);
+            this.ws = new WebSocket(`${protocol}//${"polyranked.cwcinc.dev"}`);
             // this.ws = new WebSocket("https://polytrackmultiplayer.onrender.com/");
 
             this.ws.binaryType = "arraybuffer";
