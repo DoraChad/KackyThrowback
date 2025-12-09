@@ -268,7 +268,9 @@ document.head.appendChild(rankedStyles);
 let carStripeCanvas;
 let hornColor;
 let carStripeId;
-let visualCar_carWrapId = 0;
+let visualCar_carWrapId;
+let currentCarColors;
+let storedCarStripeUvMap;
 
 const modVersion = "0.5.0 - PolyRanked";
 
@@ -30413,7 +30415,7 @@ function sendCarMultiplayerData(data, isPaused) {
         ,
         Rv.maxFrames = 5999999;
         const Lv = Rv;
-        var AudioFunctions, VisualCar3, localAudioManager, Uv, zv, Ov, Fv, Wv, collisionAudioState, hornAudioState, audioPanner, Gv, orbitCamera, orbitCameraBackwards, cockpitCamera, Kv, qv, lastUpdateTimestamp, deltaTimestamp, thisMainCarData, lastUpdatedPosition, determinism, Xv, Zv, Jv, $v, ew, tw, nw, iw, rw, aw, sw, ow, lw, cw, hw, dw, uw, pw, storedCarStripeUvMap, mw, currentCarColors, vw, ww, yw, bw, skidAudioSources, xw, kw, Ew, Sw, hornTypesMap, setCustomCarStripeImage, Mw, _w, Tw, Cw, Pw, Iw, updateAudio, Lw, Dw, Nw, updateCollisionAudio, playCollisionAudio, playSkidAudio, playHornAudio, Ow, Fw, Ww, Hw = function(e, t, n, i) {
+        var AudioFunctions, VisualCar3, localAudioManager, Uv, zv, Ov, Fv, Wv, collisionAudioState, hornAudioState, audioPanner, Gv, orbitCamera, orbitCameraBackwards, cockpitCamera, Kv, qv, lastUpdateTimestamp, deltaTimestamp, thisMainCarData, lastUpdatedPosition, determinism, Xv, Zv, Jv, $v, ew, tw, nw, iw, rw, aw, sw, ow, lw, cw, hw, dw, uw, pw, mw, vw, ww, yw, bw, skidAudioSources, xw, kw, Ew, Sw, hornTypesMap, setCustomCarStripeImage, Mw, _w, Tw, Cw, Pw, Iw, updateAudio, Lw, Dw, Nw, updateCollisionAudio, playCollisionAudio, playSkidAudio, playHornAudio, Ow, Fw, Ww, Hw = function(e, t, n, i) {
             return new (n || (n = Promise))((function(r, a) {
                 function s(e) {
                     try {
@@ -30497,9 +30499,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 dw.set(this, null),
                 uw.set(this, []),
                 pw.set(this, null),
-                storedCarStripeUvMap.set(this, void 0),
                 mw.set(this, void 0),
-                currentCarColors.set(this, void 0),
                 vw.set(this, void 0),
                 ww.set(this, void 0),
                 yw.set(this, void 0),
@@ -30616,8 +30616,8 @@ function sendCarMultiplayerData(data, isPaused) {
                     set(this, Zv, !1, "f"),
                     set(this, Jv, n, "f")
                 }
-                set(this, currentCarColors, CarColors2.random(), "f"),
-                set(this, storedCarStripeUvMap, VisualCar3.createTexture(r), "f"),
+                currentCarColors = CarColors2.random();
+                storedCarStripeUvMap = VisualCar3.createTexture(r);
                 set(this, mw, {
                     value: new Vector3(0,0,0)
                 }, "f"),
@@ -30640,7 +30640,7 @@ function sendCarMultiplayerData(data, isPaused) {
                                 e.fragmentShader = "uniform sampler2D carColorPattern;\nuniform vec3 carColorSecondary;\n" + e.fragmentShader,
                                 e.fragmentShader = e.fragmentShader.replace("vec4 diffuseColor = vec4( diffuse, opacity );", "float colorSource = texture(carColorPattern, vUv).a;\nvec4 diffuseColor = vec4( carColorSecondary * colorSource + diffuse * (1.0 - colorSource), opacity );"),
                                 e.uniforms.carColorPattern = {
-                                    value: get(this, storedCarStripeUvMap, "f")
+                                    value: storedCarStripeUvMap
                                 },
                                 e.uniforms.carColorSecondary = get(this, mw, "f"),
                                 null == e.defines && (e.defines = {}),
@@ -30700,8 +30700,8 @@ function sendCarMultiplayerData(data, isPaused) {
                 }
                 ), "f"))),
                 r.addContextRestoredEventListener(set(this, Sw, ( () => {
-                    get(this, storedCarStripeUvMap, "f").dispose(),
-                    set(this, storedCarStripeUvMap, VisualCar3.createTexture(r), "f")
+                    storedCarStripeUvMap.dispose(),
+                    storedCarStripeUvMap = VisualCar3.createTexture(r);
                 }
                 ), "f"))
             }
@@ -30716,7 +30716,7 @@ function sendCarMultiplayerData(data, isPaused) {
                     e.dispose();
                 get(this, bw, "f").length = 0,
                 get(this, lw, "f").scene.remove(get(this, cw, "f")),
-                get(this, storedCarStripeUvMap, "f").dispose();
+                storedCarStripeUvMap.dispose();
                 for (const e of get(this, cw, "f").children) {
                     if (!(e instanceof Mesh))
                         throw new Error("Mesh is not a THREE.Mesh");
@@ -30920,7 +30920,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 return null != get(this, Xv, "f") ? get(this, Xv, "f").getControls() : get(this, thisMainCarData, "f").controls
             }
             getColors() {
-                return get(this, currentCarColors, "f")
+                return currentCarColors
             }
             setColors(e) {
                 if (get(this, mw, "f").value = (new Vector3).setFromColor(e.secondary),
@@ -30935,7 +30935,7 @@ function sendCarMultiplayerData(data, isPaused) {
                     if (Array.isArray(t.material))
                         for (const n of t.material)
                             "Metal" == n.name ? n.color.set(e.frame) : "Rim" == n.name && n.color.set(e.rims);
-                set(this, currentCarColors, e, "f")
+                currentCarColors = e;
             }
             static createTexture(e) {
                 if (null == VisualCar3.images)
@@ -30946,11 +30946,6 @@ function sendCarMultiplayerData(data, isPaused) {
                 const n = t.getContext("2d");
                 if (null == n)
                     throw new Error("Failed to get context for car texture");
-
-                carStripeCanvas = n;
-                hornColor = new Color(0,0,0);
-                carStripeId = visualCar_carWrapId;
-                
                 const i = new Texture(t);
                 return i.flipY = !1,
                 i.anisotropy = e.getMaxAnisotropy(),
@@ -30959,16 +30954,6 @@ function sendCarMultiplayerData(data, isPaused) {
                 n.drawImage(VisualCar3.images.stripe, 0, 0, n.canvas.width, n.canvas.height),
                 i.needsUpdate = !0,
                 i
-
-                const carStripeUvMap = new Texture(t);
-                return carStripeUvMap.flipY = !1,
-                carStripeUvMap.anisotropy = e.getMaxAnisotropy(),
-                carStripeUvMap.needsUpdate = !0,
-
-                carStripeCanvas.clearRect(0, 0, carStripeCanvas.canvas.width, carStripeCanvas.canvas.height),
-                carStripeCanvas.drawImage(VisualCar3.images.stripe, 0, 0, carStripeCanvas.canvas.width, carStripeCanvas.canvas.height),
-                carStripeUvMap.needsUpdate = !0,
-                carStripeUvMap
             }
             setCarStripeImage(imagePath) {
                get(this, AudioFunctions, "m", setCustomCarStripeImage).call(this, imagePath);
@@ -30996,8 +30981,8 @@ function sendCarMultiplayerData(data, isPaused) {
             }
             setCarStripeId(e) {
                // console.log("Set car stripe ID:", e);
-                this.setCarStripeImage(carWrapMap.get(e) || "images/wraps/default_stripe.png");
-                carStripeId = e;
+                //this.setCarStripeImage(carWrapMap.get(e) || "images/wraps/default_stripe.png");
+                //carStripeId = e;
             }
             getCarStripeId() {
                 return carStripeId;
@@ -31381,12 +31366,7 @@ function sendCarMultiplayerData(data, isPaused) {
         dw = new WeakMap,
         uw = new WeakMap,
         pw = new WeakMap,
-        carStripeCanvas = new WeakMap,
-        storedCarStripeUvMap = new WeakMap,
         mw = new WeakMap,
-        currentCarColors = new WeakMap,
-        hornColor = new WeakMap,
-        carStripeId = new WeakMap,
         vw = new WeakMap,
         ww = new WeakMap,
         yw = new WeakMap,
@@ -31419,7 +31399,8 @@ function sendCarMultiplayerData(data, isPaused) {
                 
                 carStripeCanvas.clearRect(0, 0, carStripeCanvas.canvas.width, carStripeCanvas.canvas.height),
                 carStripeCanvas.drawImage(stripeImage, 0, 0, carStripeCanvas.canvas.width, carStripeCanvas.canvas.height),
-                get(this, storedCarStripeUvMap, "f").needsUpdate = !0;
+                storedCarStripeUvMap.needsUpdate = !0;
+                storedCarStripeUvMap
             } else {
                 const stripeImage = new Image;
                 stripeImage.src = imagePath;
@@ -31428,7 +31409,8 @@ function sendCarMultiplayerData(data, isPaused) {
 
                     carStripeCanvas.clearRect(0, 0, carStripeCanvas.canvas.width, carStripeCanvas.canvas.height),
                     carStripeCanvas.drawImage(stripeImage, 0, 0, carStripeCanvas.canvas.width, carStripeCanvas.canvas.height),
-                    get(this, storedCarStripeUvMap, "f").needsUpdate = !0
+                    storedCarStripeUvMap.needsUpdate = !0
+                    storedCarStripeUvMap
                 }));
             }
         }
@@ -32902,7 +32884,7 @@ function sendCarMultiplayerData(data, isPaused) {
                     get(this, Yy, "m", testHonk).call(this, i)
                 }
                 )),
-                h.appendChild(honkButton);
+                //h.appendChild(honkButton);
 
                 window.multiplayerClient.updateSkinsUnlocked();
 
@@ -32918,13 +32900,13 @@ function sendCarMultiplayerData(data, isPaused) {
                         this.battlePass.style.display = "none";
                     }
                 }
-                )),
-                h.appendChild(switchWrapButton);
+                ));
+                //h.appendChild(switchWrapButton);
 
                 const xpText = document.createElement("p");
                 xpText.className = "xp-text";
                 xpText.textContent = "Current XP: ";
-                h.appendChild(xpText);
+                //h.appendChild(xpText);
 
 
                 set(this, ob, document.createElement("div"), "f"),
@@ -36824,6 +36806,8 @@ function sendCarMultiplayerData(data, isPaused) {
                 const f = document.createElement("div");
                 f.className = "category-container",
                 get(this, dE, "f").appendChild(f),
+
+                    
                 set(this, uE, document.createElement("button"), "f"),
                 get(this, uE, "f").className = "button official selected",
                 get(this, uE, "f").append(document.createTextNode(get(this, nE, "f").get("Official tracks"))),
@@ -36859,7 +36843,23 @@ function sendCarMultiplayerData(data, isPaused) {
                 f.appendChild(get(this, fE, "f"));
                 const v = document.createElement("div");
                 v.className = "cover",
-                get(this, fE, "f").prepend(v),
+                get(this, fE, "f").prepend(v);
+
+                
+                const seasonalTab = document.createElement("button");
+                seasonalTab.className = "button official",
+                seasonalTab.append(document.createTextNode(get(this, nE, "f").get("Seasonal Tournament"))),
+                seasonalTab.addEventListener("click", ( () => {
+                    get(this, iE, "f").playUIClick(),
+                    get(this, eE, "m", selectTrackTab).call(this, "official")
+                }
+                )),
+                f.appendChild(seasonalTab);
+                const seasonalCover = document.createElement("div");
+                seasonalCover.className = "cover",
+                seasonalTab.prepend(seasonalCover),
+
+                
                 set(this, mE, document.createElement("div"), "f"),
                 get(this, mE, "f").className = "tracks-container open",
                 get(this, dE, "f").appendChild(get(this, mE, "f")),
@@ -45117,8 +45117,8 @@ function sendCarMultiplayerData(data, isPaused) {
             const playRankedText = document.createElement("p");
             playRankedText.textContent = "Ranked";
             playRankedButton.appendChild(playRankedText);
-            get(this, oN, "f").appendChild(playRankedButton);
-            get(this, lN, "f").push(playRankedButton);
+            //get(this, oN, "f").appendChild(playRankedButton);
+            //get(this, lN, "f").push(playRankedButton);
 
             if (window.electron) {
                 const e = document.createElement("button");
@@ -45802,6 +45802,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 const l = e.toString() + "_" + t
                   , c = (null !== (a = kB(this, vB, "f").get(l)) && void 0 !== a ? a : 0) + 1;
                 kB(this, vB, "f").set(l, c);
+                //(userToken, username, carColors, trackId, recordingTime, rawRecording)
                 const {uploadId: h, positionChange: d} = yield kB(this, mB, "f").submitLeaderboard(o.token, o.nickname, o.carColors, t, n, i, r);
                 return kB(this, vB, "f").get(l) == c && (null === (s = kB(this, gB, "f").getUserProfile(e)) || void 0 === s ? void 0 : s.token) == o.token && kB(this, fB, "f").saveRecord(e, o.tokenHash, t, h, i, r, kB(this, mB, "f").determinismState),
                 d
@@ -48041,13 +48042,13 @@ function sendCarMultiplayerData(data, isPaused) {
                     })
                 });
             }
-            submitLeaderboard(userToken, username, carColors, trackId, recordingTime, rawRecording) {
+            submitLeaderboard(userToken, username, carColors, trackId, wtfIsThis, recordingTime, rawRecording) {
                 // "version=" + versionNumber + "&userToken=" + encodeURIComponent(userToken) + "&name=" + encodeURIComponent(username) + "&carColors=" + carColors.serialize() + "&trackId=" + trackId + "&frames=" + recordingTime.numberOfFrames.toString() + "&recording=" + recording
                 return new Promise((resolve, reject) => {
                     if (this.determinismState != HT.Ok)
                         reject(new Error("Submit not allowed"));
                     const recording = rawRecording.serialize();
-                    if (recording.length >= VB(this, WB, "f"))
+                    if (recording.length >= XU(this, YU, "f"))
                         o(new Error("Recording is too large"));
                     window.multiplayerClient.proxy.submitLeaderboard(versionNumber, userToken, username, carColors.serialize(), trackId, recordingTime.numberOfFrames.toString(), recording).then(data => {
                         try {
@@ -48094,7 +48095,7 @@ function sendCarMultiplayerData(data, isPaused) {
                         const o = mainApiUrl + "verifyRecordings"
                           , l = encodeURIComponent("version=" + versionNumber + "&userToken=" + encodeURIComponent(userToken) + (null != t ? "&trackId=" + t : "") + "&maxFrames=" + carColors.toString() + "&getEstimatedRemaining=" + trackId.toString() + "&recordings=" + encodeURIComponent(JSON.stringify(recordingTime)))
                           , c = new XMLHttpRequest;
-                        c.timeout = VB(this, FB, "f"),
+                        c.timeout = XU(this, qU, "f"),
                         c.overrideMimeType("text/plain"),
                         c.onreadystatechange = () => {
                             if (4 == c.readyState)
