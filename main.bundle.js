@@ -1,3 +1,270 @@
+const rankedStyles = document.createElement("style");
+rankedStyles.textContent = `
+/* ===========================
+    Preview Toolbar
+    =========================== */
+.preview-toolbar {
+     position: absolute;
+     left: 0;
+     bottom: 0;
+     padding: 8px 10px 8px 8px;
+     background-color: var(--surface-color);
+     clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+/* ===========================
+    Editor Checkpoint Order
+    =========================== */
+.editor-checkpoint-order > .buttons {
+     display: inline-block;
+     vertical-align: bottom;
+}
+.editor-checkpoint-order > .buttons > button {
+     display: block;
+     margin: 0;
+     padding: 0;
+     border: none;
+     background-color: var(--button-color);
+     pointer-events: auto;
+     cursor: pointer;
+}
+.editor-checkpoint-order > .buttons > button:hover {
+     background-color: var(--button-hover-color);
+}
+@media (hover: none) {
+     .editor-checkpoint-order > .buttons > button:hover {
+          background-color: var(--button-color);
+     }
+}
+.editor-checkpoint-order > .buttons > button:active {
+     background-color: var(--button-active-color);
+}
+.editor-checkpoint-order > .buttons > button > img {
+     margin: 0;
+     padding: 0 6px;
+     width: 20px;
+     height: 20px;
+     vertical-align: bottom;
+     pointer-events: none;
+}
+.editor-checkpoint-order.touch > .buttons > button > img {
+     padding: 24px;
+     width: 40px;
+     height: 40px;
+}
+.editor-checkpoint-order > p {
+     margin: 0;
+     padding: 0 10px;
+     display: inline-block;
+     vertical-align: bottom;
+     line-height: 40px;
+     min-width: 275px;
+     font-size: 26px;
+     text-align: center;
+     background-color: var(--surface-transparent-color);
+     color: var(--text-color);
+}
+.editor-checkpoint-order.touch > p {
+     line-height: calc((40px + 2 * 24px) * 2);
+}
+
+/* ===========================
+    Transition Layer
+    =========================== */
+#transition-layer {
+     position: absolute;
+     left: 0;
+     top: 0;
+     z-index: 1;
+     width: 100%;
+     height: 100%;
+     background-color: #000;
+     pointer-events: none;
+     opacity: 0;
+     transition: 0.25s ease-in-out opacity;
+}
+
+/* ===========================
+    Editor Help Dialog
+    =========================== */
+.editor-help > .background {
+     position: absolute;
+     left: 0;
+     top: 0;
+     z-index: 1;
+     width: 100%;
+     height: 100%;
+     background-color: rgba(20, 20, 30, 0.5);
+     pointer-events: auto;
+}
+.editor-help > .container {
+     position: absolute;
+     left: calc(50% - 80% / 2);
+     top: 0;
+     z-index: 2;
+     display: flex;
+     flex-direction: column;
+     box-sizing: border-box;
+     width: 80%;
+     height: 100%;
+     background-color: var(--surface-color);
+}
+.editor-help > .container > h1 {
+     margin: 10px;
+     padding: 0;
+     font-weight: normal;
+     font-size: 38px;
+     text-align: center;
+     color: var(--text-color);
+}
+.editor-help > .container > .content {
+     flex-grow: 1;
+     padding: 40px;
+     background-color: var(--surface-secondary-color);
+     overflow-y: auto;
+     pointer-events: auto;
+}
+.editor-help > .container > .content > h2 {
+     margin: 32px 0 16px 0;
+     padding: 0;
+     font-weight: normal;
+     font-size: 30px;
+     color: var(--text-color);
+     border-bottom: 2px solid var(--text-color);
+}
+.editor-help > .container > .content > h2:first-of-type {
+     margin-top: 0;
+}
+.editor-help > .container > .content > p {
+     margin: 0;
+     padding: 0;
+     font-size: 20px;
+     color: var(--text-color);
+     white-space: pre-wrap;
+}
+.editor-help > .container > .content > .part-images {
+     display: flex;
+     justify-content: space-around;
+}
+.editor-help > .container > .content > .part-images > div {
+     display: flex;
+     flex-direction: column;
+}
+.editor-help > .container > .content > .part-images > div > img {
+     width: 128px;
+     height: 128px;
+     filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.4));
+     pointer-events: none;
+     transition: opacity 0.25s ease-out;
+}
+.editor-help > .container > .content > .part-images > div > img.loading {
+     opacity: 0;
+}
+.editor-help > .container > .content > .part-images > div > span {
+     margin: 0;
+     padding: 0;
+     font-size: 20px;
+     color: var(--text-color);
+     text-align: center;
+}
+.editor-help > .container > .button-wrapper > button {
+     margin: 10px;
+}
+
+
+.leaveQueueButton {
+    background-color: #521111;
+}
+
+.leaveQueueButton::after {
+    background-color: #773333;
+}
+
+.leaveQueueButton:active::after {
+    background-color: #411515;
+}
+
+.button.refresh {
+    float: right;
+}
+.xp-text {
+    display: inline-block;
+    color: var(--text-color);
+    font-size: 32px;
+    margin: 8px 0;
+    margin-left: 10px;
+    background-color: #43405b;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    padding: 8px 18px;
+}
+
+.battle-pass {
+    width: 90%;
+    position: absolute;
+    top: 70px;
+    background: var(--surface-color);
+    height: 320px;
+    left: 5%;
+    border-color: var(--surface-tertiary-color);
+    border-width: 10px;
+    border-style: double;
+    pointer-events: all;
+    border-radius: 10px;
+}
+
+.battle-pass > .button {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+.battle-pass > .car-selection {
+    overflow-x: scroll;
+    overflow-y: clip;
+    display: inline-flex;
+    width: 100%;
+}
+
+.battle-pass > .car-selection > .wrap-container {
+    width: 170px;
+    height: 240px;
+    background: var(--surface-secondary-color);
+    margin: 10px;
+    padding: 20px;
+}
+
+.battle-pass > .car-selection > .wrap-container > .wrap-preview {
+    background: var(--surface-tertiary-color);
+    width: 170px;
+    height: 170px;
+    overflow: clip;
+    pointer-events: none;
+}
+
+.battle-pass > .car-selection > .wrap-container > .wrap-preview > img {
+    width: 200px;
+    position: relative;
+    left: -15px;
+}
+
+.battle-pass > .car-selection > .wrap-container > .wrap-unlock-text {
+    color: var(--text-color);
+    margin: 0px;
+    text-align: center;
+    height: 0px;
+    margin-top: 5px;
+}
+
+.battle-pass > .car-selection > .wrap-container > .button {
+    margin: 10px;
+    left: 10px;
+    top: 10px;
+}
+`
+
+document.head.appendChild(rankedStyles);
+
+
 let carStripeCanvas;
 let hornColor;
 let carStripeId;
@@ -30230,12 +30497,9 @@ function sendCarMultiplayerData(data, isPaused) {
                 dw.set(this, null),
                 uw.set(this, []),
                 pw.set(this, null),
-                carStripeCanvas.set(this, void 0),
                 storedCarStripeUvMap.set(this, void 0),
                 mw.set(this, void 0),
                 currentCarColors.set(this, void 0),
-                hornColor.set(this, void 0),
-                carStripeId.set(this, void 0),
                 vw.set(this, void 0),
                 ww.set(this, void 0),
                 yw.set(this, void 0),
@@ -30323,7 +30587,7 @@ function sendCarMultiplayerData(data, isPaused) {
                             w: startTransform.quaternion.w
                         },
                         collisionImpulses: [],
-                        wheelContact: [null, null, null, null],
+                        wheelContact: [!1, !1, !1, !1],
                         wheelSuspensionLength: [VisualCar3.suspensionResetLengthFront, VisualCar3.suspensionResetLengthFront, VisualCar3.suspensionResetLengthRear, VisualCar3.suspensionResetLengthRear],
                         steeringAngle: 0,
                         wheelSuspensionVelocity: [0, 0, 0, 0],
@@ -30610,6 +30874,9 @@ function sendCarMultiplayerData(data, isPaused) {
                 let movementDirection = latestPos.clone().sub(previousPos);
                 let dotProduct = carForward.dot(movementDirection);
 
+                let approximateWheelRotation = (dotProduct / (2 * Math.PI * wheelRadius)) * (2 * Math.PI); // in radians
+                let interpolatedRelativeWheelRotation = approximateWheelRotation * t;
+
                 let interpolatedSteeringAngle = this.previousCarOrientation.steeringAngle + (this.latestCarOrientation.steeringAngle - this.previousCarOrientation.steeringAngle) * t;
                 let interpolatedSuspensionLength = this.previousCarOrientation.suspensionLength + (this.latestCarOrientation.suspensionLength - this.previousCarOrientation.suspensionLength) * t;
 
@@ -30640,7 +30907,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 return get(this, qv, "f")
             }
             weaklySetPaused(e) {
-                set(this, Ev, e, "f");
+                set(this, qv, e, "f");
             }
             set isPaused(e) {
                 if (e && window.multiplayerClient.inRankedMatch) {return;}
@@ -30815,7 +31082,7 @@ function sendCarMultiplayerData(data, isPaused) {
                         w: carQuaternion.w
                     },
                     collisionImpulses: [],
-                    wheelInContact: [!1, !1, !1, !1],
+                    wheelContact: [!1, !1, !1, !1],
                     wheelSuspensionLength: [suspensionLength, suspensionLength, suspensionLength, suspensionLength],  // .07809501004219055
                     steeringAngle: steeringAngle,
                     wheelSuspensionVelocity: [0, 0, 0, 0],
@@ -32632,10 +32899,10 @@ function sendCarMultiplayerData(data, isPaused) {
                 honkButton.append(document.createTextNode("Honk!")),
                 honkButton.addEventListener("click", ( () => {
                     i.playUIClick(),
-                    get(this, ky, "m", testHonk).call(this, i)
+                    get(this, Yy, "m", testHonk).call(this, i)
                 }
                 )),
-                c.appendChild(honkButton);
+                h.appendChild(honkButton);
 
                 window.multiplayerClient.updateSkinsUnlocked();
 
@@ -32652,12 +32919,12 @@ function sendCarMultiplayerData(data, isPaused) {
                     }
                 }
                 )),
-                c.appendChild(switchWrapButton);
+                h.appendChild(switchWrapButton);
 
                 const xpText = document.createElement("p");
                 xpText.className = "xp-text";
                 xpText.textContent = "Current XP: ";
-                c.appendChild(xpText);
+                h.appendChild(xpText);
 
 
                 set(this, ob, document.createElement("div"), "f"),
@@ -32795,7 +33062,7 @@ function sendCarMultiplayerData(data, isPaused) {
                         wrapSelectButton.innerHTML = 'Select';
                         wrapSelectButton.onclick = (() => {
                             i.playUIClick(),
-                            get(this, ky, "m", setSelectedWrapId).call(this, wrapId),
+                            get(this, Yy, "m", setSelectedWrapId).call(this, wrapId),
                             set(this, updatedCarCustomization, !0, "f");
                         });
                     
@@ -32821,6 +33088,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 get(this, Jy, "f").scene.remove(get(this, rb, "f")),
                 window.removeEventListener("keydown", get(this, ib, "f")),
                 get(this, nb, "f").removeChild(get(this, sb, "f")),
+                get(this, nb, "f").removeChild(this.battlePass),
                 get(this, ab, "f").dispose(),
                 get(this, Jy, "f").canvas.style.touchAction = ""
             }
@@ -39911,7 +40179,7 @@ function sendCarMultiplayerData(data, isPaused) {
           , LT = null
           , DT = null
           , NT = null;
-        function generateCarPreviewImage(e, wrapId, t, plurPx=0) {
+        function generateCarPreviewImage(e, wrapId, t, blurPx=0) {
             return PT(this, void 0, void 0, (function*() {
                 for (; null != NT; )
                     yield NT;
@@ -39960,14 +40228,16 @@ function sendCarMultiplayerData(data, isPaused) {
                             }
                         }
                         ), 25);
-                        t.addCancelCallback(( () => {
-                            clearTimeout(i),
-                            n("")
+                        if (t) {
+                            t.addCancelCallback(( () => {
+                                clearTimeout(i),
+                                n("")
+                                
+                            }));
                         }
-                        ))
                     }
                     ))
-                }(e, t);
+                }(e, wrapId, t, blurPx);
                 let i;
                 NT = n;
                 try {
@@ -46803,7 +47073,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 throw new TypeError("Cannot write private member to an object whose class did not declare it");
             return "a" === i ? r.call(e, n) : r ? r.value = n : t.set(e, n),
             n
-        }, RU = function(e, t, n, i) {
+        }, get = function(e, t, n, i) {
             if ("a" === n && !i)
                 throw new TypeError("Private accessor was defined without a getter");
             if ("function" == typeof t ? e !== t || !i : !t.has(e))
@@ -46849,21 +47119,21 @@ function sendCarMultiplayerData(data, isPaused) {
                 ))
             }
             migrate() {
-                const e = RU(this, hU, "m", xU).call(this);
-                "v4" == e || ("v3" == e ? (RU(this, hU, "m", vU).call(this),
-                RU(this, hU, "m", AU).call(this)) : (RU(this, hU, "m", fU).call(this),
-                RU(this, hU, "m", mU).call(this),
-                RU(this, hU, "m", gU).call(this),
-                RU(this, hU, "m", vU).call(this),
-                RU(this, hU, "m", AU).call(this)))
+                const e = get(this, hU, "m", xU).call(this);
+                "v4" == e || ("v3" == e ? (get(this, hU, "m", vU).call(this),
+                get(this, hU, "m", AU).call(this)) : (get(this, hU, "m", fU).call(this),
+                get(this, hU, "m", mU).call(this),
+                get(this, hU, "m", gU).call(this),
+                get(this, hU, "m", vU).call(this),
+                get(this, hU, "m", AU).call(this)))
             }
             saveRecord(e, t, n, i, r, a, s) {
                 if (!Number.isSafeInteger(e) || e < 0)
                     throw new Error("Profile slot is invalid");
                 try {
                     let o;
-                    o = s == HT.Ok ? RU(dU, dU, "f", kU) + e.toString() + "_default_" + n : RU(dU, dU, "f", kU) + e.toString() + "_undeterministic_" + n,
-                    RU(this, uU, "f").setItem(o, JSON.stringify({
+                    o = s == HT.Ok ? get(dU, dU, "f", kU) + e.toString() + "_default_" + n : get(dU, dU, "f", kU) + e.toString() + "_undeterministic_" + n,
+                    get(this, uU, "f").setItem(o, JSON.stringify({
                         uploadId: i,
                         tokenHash: t,
                         frames: r.numberOfFrames.toString(),
@@ -46878,8 +47148,8 @@ function sendCarMultiplayerData(data, isPaused) {
                     throw new Error("Profile slot is invalid");
                 try {
                     let r;
-                    r = i == HT.Ok ? RU(dU, dU, "f", kU) + e.toString() + "_default_" + n : RU(dU, dU, "f", kU) + e.toString() + "_undeterministic_" + n;
-                    const a = RU(this, uU, "f").getItem(r);
+                    r = i == HT.Ok ? get(dU, dU, "f", kU) + e.toString() + "_default_" + n : get(dU, dU, "f", kU) + e.toString() + "_undeterministic_" + n;
+                    const a = get(this, uU, "f").getItem(r);
                     if (null == a)
                         return null;
                     const s = JSON.parse(a);
@@ -46923,9 +47193,9 @@ function sendCarMultiplayerData(data, isPaused) {
                 if (!Number.isSafeInteger(e) || e < 0)
                     throw new Error("Profile slot is invalid");
                 try {
-                    const t = RU(this, uU, "f").getAllKeys();
+                    const t = get(this, uU, "f").getAllKeys();
                     for (const n of t)
-                        n.startsWith(RU(dU, dU, "f", kU) + e.toString() + "_") && RU(this, uU, "f").removeItem(n)
+                        n.startsWith(get(dU, dU, "f", kU) + e.toString() + "_") && get(this, uU, "f").removeItem(n)
                 } catch (e) {
                     console.error(e)
                 }
@@ -46933,7 +47203,7 @@ function sendCarMultiplayerData(data, isPaused) {
             deleteAllRecordsForTrack(e) {
                 for (let t = 0; t < 3; t++)
                     try {
-                        RU(this, uU, "f").removeItem(RU(dU, dU, "f", kU) + t.toString() + "_" + e)
+                        get(this, uU, "f").removeItem(get(dU, dU, "f", kU) + t.toString() + "_" + e)
                     } catch (e) {
                         console.error(e)
                     }
@@ -46941,7 +47211,7 @@ function sendCarMultiplayerData(data, isPaused) {
             saveCustomTrack(e, t, n) {
                 const i = t.toExportString(e);
                 try {
-                    return RU(this, uU, "f").setItem(RU(dU, dU, "f", EU) + e.name, JSON.stringify({
+                    return get(this, uU, "f").setItem(get(dU, dU, "f", EU) + e.name, JSON.stringify({
                         data: i,
                         saveTime: n.getTime()
                     })),
@@ -46954,7 +47224,7 @@ function sendCarMultiplayerData(data, isPaused) {
             loadCustomTrack(e) {
                 let t, n;
                 try {
-                    const i = RU(this, uU, "f").getItem(RU(dU, dU, "f", EU) + e);
+                    const i = get(this, uU, "f").getItem(get(dU, dU, "f", EU) + e);
                     if (null == i)
                         return null;
                     const r = JSON.parse(i);
@@ -46977,7 +47247,7 @@ function sendCarMultiplayerData(data, isPaused) {
             }
             deleteCustomTrack(e) {
                 try {
-                    return RU(this, uU, "f").removeItem(RU(dU, dU, "f", EU) + e),
+                    return get(this, uU, "f").removeItem(get(dU, dU, "f", EU) + e),
                     !0
                 } catch (e) {
                     return console.error(e),
@@ -46987,25 +47257,25 @@ function sendCarMultiplayerData(data, isPaused) {
             getAllCustomTrackNames() {
                 let e;
                 try {
-                    e = RU(this, uU, "f").getAllKeys()
+                    e = get(this, uU, "f").getAllKeys()
                 } catch (e) {
                     return console.error(e),
                     null
                 }
-                return e.filter((e => e.startsWith(RU(dU, dU, "f", EU)))).map((e => e.substring(RU(dU, dU, "f", EU).length)))
+                return e.filter((e => e.startsWith(get(dU, dU, "f", EU)))).map((e => e.substring(get(dU, dU, "f", EU).length)))
             }
             saveUserProfileSlot(e) {
                 if (!Number.isSafeInteger(e) || e < 0)
                     throw new Error("Profile slot is invalid");
                 try {
-                    RU(this, uU, "f").setItem(RU(dU, dU, "f", SU), JSON.stringify(e))
+                    get(this, uU, "f").setItem(get(dU, dU, "f", SU), JSON.stringify(e))
                 } catch (e) {
                     console.error(e)
                 }
             }
             loadUserProfileSlot() {
                 try {
-                    const e = RU(this, uU, "f").getItem(RU(dU, dU, "f", SU));
+                    const e = get(this, uU, "f").getItem(get(dU, dU, "f", SU));
                     if (null != e)
                         try {
                             const t = JSON.parse(e);
@@ -47024,7 +47294,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 if (!Number.isSafeInteger(e) || e < 0)
                     throw new Error("Profile slot is invalid");
                 try {
-                    RU(this, uU, "f").setItem(RU(dU, dU, "f", MU) + e.toString(), JSON.stringify({
+                    get(this, uU, "f").setItem(get(dU, dU, "f", MU) + e.toString(), JSON.stringify({
                         token: t,
                         nickname: n,
                         carColors: i.serialize(),
@@ -47039,7 +47309,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 if (!Number.isSafeInteger(e) || e < 0)
                     throw new Error("Profile slot is invalid");
                 try {
-                    const t = RU(this, uU, "f").getItem(RU(dU, dU, "f", MU) + e.toString());
+                    const t = get(this, uU, "f").getItem(get(dU, dU, "f", MU) + e.toString());
                     if (null != t) {
                         const e = JSON.parse(t);
                         if ("object" != typeof e)
@@ -47066,7 +47336,7 @@ function sendCarMultiplayerData(data, isPaused) {
             }
             deleteUserProfile(e) {
                 try {
-                    RU(this, uU, "f").removeItem(RU(dU, dU, "f", MU) + e.toString())
+                    get(this, uU, "f").removeItem(get(dU, dU, "f", MU) + e.toString())
                 } catch (e) {
                     console.error(e)
                 }
@@ -47076,14 +47346,14 @@ function sendCarMultiplayerData(data, isPaused) {
                     const t = [];
                     for (const [n,i] of e.entries())
                         t.push([el[n], i]);
-                    RU(this, uU, "f").setItem(RU(dU, dU, "f", _U), JSON.stringify(t))
+                    get(this, uU, "f").setItem(get(dU, dU, "f", _U), JSON.stringify(t))
                 } catch (e) {
                     console.error(e)
                 }
             }
             loadSettings() {
                 try {
-                    const e = RU(this, uU, "f").getItem(RU(dU, dU, "f", _U));
+                    const e = get(this, uU, "f").getItem(get(dU, dU, "f", _U));
                     if (null == e)
                         return null;
                     const t = JSON.parse(e);
@@ -47115,14 +47385,14 @@ function sendCarMultiplayerData(data, isPaused) {
                     const t = [];
                     for (const [n,i] of e.entries())
                         t.push([gk[n], i]);
-                    RU(this, uU, "f").setItem(RU(dU, dU, "f", TU), JSON.stringify(t))
+                    get(this, uU, "f").setItem(get(dU, dU, "f", TU), JSON.stringify(t))
                 } catch (e) {
                     console.error(e)
                 }
             }
             loadKeyBindings() {
                 try {
-                    const e = RU(this, uU, "f").getItem(RU(dU, dU, "f", TU));
+                    const e = get(this, uU, "f").getItem(get(dU, dU, "f", TU));
                     if (null == e)
                         return null;
                     const t = JSON.parse(e);
@@ -47151,14 +47421,14 @@ function sendCarMultiplayerData(data, isPaused) {
             }
             saveTrackSelectionTab(e) {
                 try {
-                    RU(this, uU, "f").setItem(RU(dU, dU, "f", CU), e)
+                    get(this, uU, "f").setItem(get(dU, dU, "f", CU), e)
                 } catch (e) {
                     console.error(e)
                 }
             }
             loadTrackSelectionTab() {
                 try {
-                    const e = RU(this, uU, "f").getItem(RU(dU, dU, "f", CU));
+                    const e = get(this, uU, "f").getItem(get(dU, dU, "f", CU));
                     if ("official" == e || "community" == e || "custom" == e)
                         return e
                 } catch (e) {
@@ -47172,14 +47442,14 @@ function sendCarMultiplayerData(data, isPaused) {
         hU = new WeakSet,
         fU = function() {
             try {
-                const e = RU(this, uU, "f").getAllKeys();
+                const e = get(this, uU, "f").getAllKeys();
                 try {
-                    const e = RU(this, uU, "f").getItem("car_colors");
+                    const e = get(this, uU, "f").getItem("car_colors");
                     if (null != e) {
                         const t = JSON.parse(e)
                           , n = new CarColors2(new Color(t[0]),new Color(t[1]),new Color(t[2]),new Color(t[3]));
-                        RU(this, hU, "m", yU).call(this, n),
-                        RU(this, uU, "f").removeItem("car_colors")
+                        get(this, hU, "m", yU).call(this, n),
+                        get(this, uU, "f").removeItem("car_colors")
                     }
                 } catch (e) {
                     console.error(e)
@@ -47187,18 +47457,18 @@ function sendCarMultiplayerData(data, isPaused) {
                 for (const t of e) {
                     if (t.startsWith("record_"))
                         try {
-                            RU(this, uU, "f").removeItem(t)
+                            get(this, uU, "f").removeItem(t)
                         } catch (e) {
                             console.error(e)
                         }
                     if (t.startsWith("custom_track_"))
                         try {
-                            const e = RU(this, uU, "f").getItem(t);
+                            const e = get(this, uU, "f").getItem(t);
                             if (null != e) {
                                 const n = XA(e);
                                 if (null != n) {
                                     const {trackMetadata: e, trackData: i} = n;
-                                    this.saveCustomTrack(e, i, new Date) && RU(this, uU, "f").removeItem(t)
+                                    this.saveCustomTrack(e, i, new Date) && get(this, uU, "f").removeItem(t)
                                 }
                             }
                         } catch (e) {
@@ -47212,14 +47482,14 @@ function sendCarMultiplayerData(data, isPaused) {
         ,
         mU = function() {
             try {
-                const e = RU(this, uU, "f").getAllKeys();
+                const e = get(this, uU, "f").getAllKeys();
                 try {
-                    const e = RU(this, uU, "f").getItem("v1_car");
+                    const e = get(this, uU, "f").getItem("v1_car");
                     if (null != e) {
                         const t = JSON.parse(e)
                           , n = new CarColors2(new Color(t[0]),new Color(t[1]),new Color(t[2]),new Color(t[3]));
-                        RU(this, hU, "m", yU).call(this, n),
-                        RU(this, uU, "f").removeItem("v1_car")
+                        get(this, hU, "m", yU).call(this, n),
+                        get(this, uU, "f").removeItem("v1_car")
                     }
                 } catch (e) {
                     console.error(e)
@@ -47227,13 +47497,13 @@ function sendCarMultiplayerData(data, isPaused) {
                 for (const t of e) {
                     if (t.startsWith("v1_record_"))
                         try {
-                            RU(this, uU, "f").removeItem(t)
+                            get(this, uU, "f").removeItem(t)
                         } catch (e) {
                             console.error(e)
                         }
                     if (t.startsWith("v1_track_"))
                         try {
-                            const e = RU(this, uU, "f").getItem(t);
+                            const e = get(this, uU, "f").getItem(t);
                             if (null != e) {
                                 const n = {
                                     name: t.substring(9),
@@ -47244,7 +47514,7 @@ function sendCarMultiplayerData(data, isPaused) {
                                     throw new Error("Failed to load v1 track for migration");
                                 if (!this.saveCustomTrack(n, i, new Date))
                                     throw new Error("Failed to save v1 track for migration");
-                                RU(this, uU, "f").removeItem(t)
+                                get(this, uU, "f").removeItem(t)
                             }
                         } catch (e) {
                             console.error(e)
@@ -47257,9 +47527,9 @@ function sendCarMultiplayerData(data, isPaused) {
         ,
         gU = function() {
             try {
-                const e = RU(this, uU, "f").getAllKeys();
+                const e = get(this, uU, "f").getAllKeys();
                 try {
-                    const e = RU(this, uU, "f").getItem("v2_user");
+                    const e = get(this, uU, "f").getItem("v2_user");
                     if (null != e) {
                         const t = JSON.parse(e);
                         if (Array.isArray(t) || "object" != typeof t)
@@ -47271,42 +47541,42 @@ function sendCarMultiplayerData(data, isPaused) {
                         if ("string" != typeof i)
                             throw new Error("User profile nickname is not a string");
                         const r = CarColors2.random();
-                        RU(this, hU, "m", wU).call(this, n, i, r),
-                        RU(this, uU, "f").removeItem("v2_user")
+                        get(this, hU, "m", wU).call(this, n, i, r),
+                        get(this, uU, "f").removeItem("v2_user")
                     }
                 } catch (e) {
                     console.error(e)
                 }
                 try {
-                    const e = RU(this, uU, "f").getItem("v2_car");
+                    const e = get(this, uU, "f").getItem("v2_car");
                     if (null != e) {
                         const t = CarColors2.deserialize(e);
-                        RU(this, hU, "m", yU).call(this, t),
-                        RU(this, uU, "f").removeItem("v2_car")
+                        get(this, hU, "m", yU).call(this, t),
+                        get(this, uU, "f").removeItem("v2_car")
                     }
                 } catch (e) {
                     console.error(e)
                 }
                 try {
-                    RU(this, uU, "f").removeItem("v2_settings")
+                    get(this, uU, "f").removeItem("v2_settings")
                 } catch (e) {
                     console.error(e)
                 }
                 try {
-                    RU(this, uU, "f").removeItem("v2_key_bindings")
+                    get(this, uU, "f").removeItem("v2_key_bindings")
                 } catch (e) {
                     console.error(e)
                 }
                 for (const t of e)
                     if (t.startsWith("v2_record_"))
                         try {
-                            RU(this, uU, "f").removeItem(t)
+                            get(this, uU, "f").removeItem(t)
                         } catch (e) {
                             console.error(e)
                         }
                     else if (t.startsWith("v2_track_"))
                         try {
-                            const e = RU(this, uU, "f").getItem(t);
+                            const e = get(this, uU, "f").getItem(t);
                             if (null != e) {
                                 const n = {
                                     name: t.substring(9),
@@ -47317,7 +47587,7 @@ function sendCarMultiplayerData(data, isPaused) {
                                     throw new Error("Failed to load v2 track for migration");
                                 if (!this.saveCustomTrack(n, i, new Date))
                                     throw new Error("Failed to save v2 track for migration");
-                                RU(this, uU, "f").removeItem(t)
+                                get(this, uU, "f").removeItem(t)
                             }
                         } catch (e) {
                             console.error(e)
@@ -47329,19 +47599,19 @@ function sendCarMultiplayerData(data, isPaused) {
         ,
         vU = function() {
             try {
-                const e = RU(this, uU, "f").getAllKeys();
+                const e = get(this, uU, "f").getAllKeys();
                 try {
-                    const e = RU(this, uU, "f").getItem("polytrack_v3_user_slot");
+                    const e = get(this, uU, "f").getItem("polytrack_v3_user_slot");
                     if (null != e) {
                         const t = Number.parseInt(e, 10);
                         Number.isSafeInteger(t) && t >= 0 && t <= 2 && (this.saveUserProfileSlot(t),
-                        RU(this, uU, "f").removeItem("polytrack_v3_user_slot"))
+                        get(this, uU, "f").removeItem("polytrack_v3_user_slot"))
                     }
                 } catch (e) {
                     console.error(e)
                 }
                 try {
-                    const e = RU(this, uU, "f").getItem("polytrack_v3_settings");
+                    const e = get(this, uU, "f").getItem("polytrack_v3_settings");
                     if (null != e) {
                         const t = JSON.parse(e);
                         if (Array.isArray(t)) {
@@ -47356,14 +47626,14 @@ function sendCarMultiplayerData(data, isPaused) {
                                 "string" == typeof i && e.set(el[t], i)
                             }
                             this.saveSettings(e),
-                            RU(this, uU, "f").removeItem("polytrack_v3_settings")
+                            get(this, uU, "f").removeItem("polytrack_v3_settings")
                         }
                     }
                 } catch (e) {
                     console.error(e)
                 }
                 try {
-                    const e = RU(this, uU, "f").getItem("polytrack_v3_key_bindings");
+                    const e = get(this, uU, "f").getItem("polytrack_v3_key_bindings");
                     if (null != e) {
                         const t = JSON.parse(e);
                         if (Array.isArray(t)) {
@@ -47384,7 +47654,7 @@ function sendCarMultiplayerData(data, isPaused) {
                                 null !== a && "string" != typeof a || e.set(gk[t], [r, a])
                             }
                             this.saveKeyBindings(e),
-                            RU(this, uU, "f").removeItem("polytrack_v3_key_bindings")
+                            get(this, uU, "f").removeItem("polytrack_v3_key_bindings")
                         }
                     }
                 } catch (e) {
@@ -47408,7 +47678,7 @@ function sendCarMultiplayerData(data, isPaused) {
                         }
                         if (null != e)
                             try {
-                                const n = RU(this, uU, "f").getItem(t);
+                                const n = get(this, uU, "f").getItem(t);
                                 if (null != n) {
                                     const i = JSON.parse(n);
                                     if ("object" != typeof i)
@@ -47425,20 +47695,20 @@ function sendCarMultiplayerData(data, isPaused) {
                                       , hornCol = (new Color).setHex(i.hornColor)
                                       , wrapId = i.carStripeId;
                                     this.saveUserProfile(e, null != r ? r : AD.createToken(), a, s, hornCol, wrapId),
-                                    RU(this, uU, "f").removeItem(t)
+                                    get(this, uU, "f").removeItem(t)
                                 }
                             } catch (e) {
                                 console.error(e)
                             }
                     } else if (t.startsWith("polytrack_v3_record_"))
                         try {
-                            RU(this, uU, "f").removeItem(t)
+                            get(this, uU, "f").removeItem(t)
                         } catch (e) {
                             console.error(e)
                         }
                     else if (t.startsWith("polytrack_v3_track_"))
                         try {
-                            const e = RU(this, uU, "f").getItem(t);
+                            const e = get(this, uU, "f").getItem(t);
                             if (null != e) {
                                 const n = {
                                     name: t.substring(19),
@@ -47456,13 +47726,13 @@ function sendCarMultiplayerData(data, isPaused) {
                                     throw new Error("Failed to load v2 track for migration");
                                 if (!this.saveCustomTrack(n, r, new Date(i.saveTime)))
                                     throw new Error("Failed to save v2 track for migration");
-                                RU(this, uU, "f").removeItem(t)
+                                get(this, uU, "f").removeItem(t)
                             }
                         } catch (e) {
                             console.error(e)
                         }
                 try {
-                    RU(this, uU, "f").removeItem("polytrack_v3_migrated")
+                    get(this, uU, "f").removeItem("polytrack_v3_migrated")
                 } catch (e) {
                     console.error(e)
                 }
@@ -47482,7 +47752,7 @@ function sendCarMultiplayerData(data, isPaused) {
         ,
         AU = function() {
             try {
-                RU(this, uU, "f").setItem(RU(dU, dU, "f", bU), "")
+                get(this, uU, "f").setItem(get(dU, dU, "f", bU), "")
             } catch (e) {
                 console.error(e)
             }
@@ -47490,9 +47760,9 @@ function sendCarMultiplayerData(data, isPaused) {
         ,
         xU = function() {
             try {
-                if (null != RU(this, uU, "f").getItem(RU(dU, dU, "f", bU)))
+                if (null != get(this, uU, "f").getItem(get(dU, dU, "f", bU)))
                     return "v4";
-                if (null != RU(this, uU, "f").getItem("polytrack_v3_migrated"))
+                if (null != get(this, uU, "f").getItem("polytrack_v3_migrated"))
                     return "v3"
             } catch (e) {
                 console.error(e)
@@ -47509,28 +47779,28 @@ function sendCarMultiplayerData(data, isPaused) {
             )()
         },
         bU = {
-            value: RU(dU, dU, "f", pU) + "migrated"
+            value: get(dU, dU, "f", pU) + "migrated"
         },
         kU = {
-            value: RU(dU, dU, "f", pU) + "record_"
+            value: get(dU, dU, "f", pU) + "record_"
         },
         EU = {
-            value: RU(dU, dU, "f", pU) + "track_"
+            value: get(dU, dU, "f", pU) + "track_"
         },
         SU = {
-            value: RU(dU, dU, "f", pU) + "user_slot"
+            value: get(dU, dU, "f", pU) + "user_slot"
         },
         MU = {
-            value: RU(dU, dU, "f", pU) + "user_"
+            value: get(dU, dU, "f", pU) + "user_"
         },
         _U = {
-            value: RU(dU, dU, "f", pU) + "settings"
+            value: get(dU, dU, "f", pU) + "settings"
         },
         TU = {
-            value: RU(dU, dU, "f", pU) + "key_bindings"
+            value: get(dU, dU, "f", pU) + "key_bindings"
         },
         CU = {
-            value: RU(dU, dU, "f", pU) + "selected_track_tab"
+            value: get(dU, dU, "f", pU) + "selected_track_tab"
         };
         const DU = LU;
         var NU, BU, UU, zU, OU, FU, WU, HU, VU, GU = function(e, t, n, i, r) {
@@ -48240,7 +48510,7 @@ function sendCarMultiplayerData(data, isPaused) {
                         w: e.quaternion.w
                     },
                     collisionImpulses: [],
-                    wheelContact: [null, null, null, null],
+                    wheelContact: [!1, !1, !1, !1],
                     wheelSuspensionLength: [VisualCar2.suspensionResetLengthFront, VisualCar2.suspensionResetLengthFront, VisualCar2.suspensionResetLengthRear, VisualCar2.suspensionResetLengthRear],
                     steeringAngle: 0,
                     wheelSuspensionVelocity: [0, 0, 0, 0],
