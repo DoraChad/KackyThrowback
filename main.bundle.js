@@ -3,6 +3,7 @@ let seasonalContents;
 let seasonalTab;
 let tab1Button;
 let tab2Button;
+let playerData;
 
 const switchTab = function(tab) {
     if (tab === "Teams") {
@@ -12,6 +13,19 @@ const switchTab = function(tab) {
         tab2Button.classList.remove("selected");
         tab1Button.classList.add("selected");
     }
+}
+
+const trackIds = {
+    1: "cdc9e392f2189731eb8635c087ec701fae48ac38a6700cb45d053658a2a5af1f",
+    2: "3b12541e3c134ab74d58e7c19f6940a03aa07a4f3465fa3392b85da09627db96",
+    3: "16ba5e78c8831f1e9d190c55b7ded92c9c699d4641c71b5bd81dcf7988d54312",
+    4: "7d7272ad9ff4c54cd1af271ce549d5194cb921f6c7d60796709e24aae3cda7ad",
+    5: "e89fec9c4cf0f766b7f9213e8fd4030663a8878d965daa72a16b962d96fee5bc",
+    6: "2fbf02680e22f00c7c30964ae7ef1de2958f503f0324bddfcdb8370891d78cca",
+    7: "2b02c78b74e2ac2c2595085f33aa87624364e21cf9e6c24360ddb37707899861",
+    8: "02526b78e43a189efbfc7ef14872a5b81c11d863ec17a14bd30823bdc98144c4",
+    9: "20b0a82dcc8f722a667da2f4c5b7672683dd07ea6ddad2c54cb2b494367647fd",
+    10: "0c21f24f19ff169cf454374172b73bab2ffdf6142ebf95fb92fb478b4176ac70"
 }
 
 const seasonalTracks = {
@@ -63,6 +77,8 @@ function toTrackFilename(name) {
         .replace(/\s+/g, "_") + ".track";
 }
 
+
+
 const getSeasonalTrackCode = async function(trackNum) {
     const url = `https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/tracks/seasonal/${toTrackFilename(seasonalTracks[trackNum][0])}`;
 
@@ -75,8 +91,70 @@ const getSeasonalTrackCode = async function(trackNum) {
     return await res.text();
 
 }
+async function getSeasonalLeaderboard() {
+    const urls = [];
+    for (let trackNum = 1; trackNum <= 10; trackNum++) {
+        const url = `https://polyproxy.orangy.cfd/leaderboard?version=0.5.2&trackId=${trackIds[trackNum]}&skip=0&amount=200&onlyVerified=false`;
+        urls.push(url);
+    }
 
-const loadSeasonalTracks = function() {
+    const allData = await Promise.all(
+        urls.map(url => fetch(url).then(r => r.json()))
+    );
+
+    const players = new Map();
+
+    allData.forEach((trackData, index) => {
+        const trackNum = index + 1;
+        const entries = trackData.entries || [];
+
+        entries.forEach((entry, positionIndex) => {
+            const { userId, name, frames } = entry;
+
+            if (!players.has(userId)) {
+                players.set(userId, {
+                    userId,
+                    name,
+                    tracks: []
+                });
+            }
+
+            players.get(userId).tracks.push({
+                trackNum,
+                frames,
+                position: positionIndex + 1
+            });
+        });
+    });
+
+    // Convert Map → array for easy use
+    return Array.from(players.values());
+}
+
+function calculateAveragePlacement(playersMap, totalTracks = 10, defaultPlacement = 1000) {
+    const playersArray = Array.from(playersMap.values());
+
+    playersArray.forEach(player => {
+        const positions = [];
+        for (let trackNum = 1; trackNum <= totalTracks; trackNum++) {
+            const track = player.tracks.find(t => t.trackNum === trackNum);
+            positions.push(track ? track.position : defaultPlacement);
+        }
+
+        const sum = positions.reduce((acc, pos) => acc + pos, 0);
+        player.averagePlacement = sum / totalTracks;
+    });
+
+    playersArray.sort((a, b) => a.averagePlacement - b.averagePlacement);
+
+    return playersArray;
+}
+
+
+const loadSeasonalTracks = async function() {
+
+    playerData = await getSeasonalLeaderboard();
+    
     const title = document.createElement("p")
     title.textContent = "---- Winter 1 ----"
     title.style.textAlign = "center";
@@ -115,6 +193,7 @@ const loadSeasonalTracks = function() {
         title.style.fontSize = "45px";
         title.style.zIndex = "1";
         title.style.position = "relative";
+        title.style.pointerEvents = "none";
 
         const author = document.createElement("p");
         author.textContent = seasonalTracks[e][1];
@@ -123,12 +202,14 @@ const loadSeasonalTracks = function() {
         author.style.fontSize = "18px";
         author.style.zIndex = "1";
         author.style.position = "relative";
+        author.style.pointerEvents = "none";
 
         contentDiv.appendChild(title);
         contentDiv.appendChild(author);
 
         
         const tagDiv = document.createElement("div");
+        tagDiv.style.pointerEvents = "none";
         tagDiv.className = "tag-div";
 
         for (let i = 0; i < 2; i++) {
@@ -159,7 +240,7 @@ const loadSeasonalTracks = function() {
     contentDiv.style.flexShrink = "0";
     scroll.appendChild(contentDiv);
 
-
+    
     const leaderboardDiv = document.createElement("div");
     leaderboardDiv.className = "seasonal-leaderboard-outer";
     horizontalDiv.appendChild(leaderboardDiv);
@@ -197,10 +278,70 @@ const loadSeasonalTracks = function() {
 
     tabDiv.appendChild(tab1Div);
     tabDiv.appendChild(tab2Div);
+
+    const createEntry = function(parent, rank = "Rank", player = "Player") {
+        const entry = document.createElement("div");
+        entry.className = "seasonal-lbs-entry";
+
+        const t1 = document.createElement("p")
+        t1.style.padding = "10px";
+        t1.style.margin = "10px";
+        if (rank !== "Rank") {
+            t1.style.backgroundColor = "#212b58";   
+        }
+        t1.style.borderRadius = "5px";
+        t1.textContent = rank;
+        
+        const t2 = document.createElement("p")
+        t2.style.padding = "10px";
+        t2.style.margin = "10px";
+        if (rank !== "Rank") {
+            t2.style.backgroundColor = "#212b58";
+        }
+
+        t2.style.width = "100%";
+        t2.style.borderRadius = "5px";
+        t2.textContent = player;
+
+        entry.appendChild(t1);
+        entry.appendChild(t2);
+
+        parent.appendChild(entry);
+    };
+
+    //header
+    createEntry(leaderboardContents);
+
+    const entriesDiv = document.createElement("div");
+    entriesDiv.className = "seasonal-lbs-entries-div";
+
+    leaderboardContents.appendChild(entriesDiv);
+
+    const sortedData = calculateAveragePlacement(playerData);
+
+    let counter = 1;
+    sortedData.forEach(e => {
+        createEntry(entriesDiv, counter, e.name)
+        counter += 1;
+    })
 }
 
 const rankedStyles = document.createElement("style");
 rankedStyles.textContent = `
+.seasonal-lbs-entries-div {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+.seasonal-lbs-entry {
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    color: white;
+    align-items: center;
+}
 .tag-div {
     width: 100%;
     height: 25%;
@@ -281,6 +422,9 @@ rankedStyles.textContent = `
     background: #28346a;
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 .seasonal-lbs-tabs {
     height: 6%;
