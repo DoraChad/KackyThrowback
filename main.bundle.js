@@ -15,19 +15,20 @@ const seasonalTracks = {
     10: "Track10"
 }
 
+//its public token no worries
 const teams = {
     "DD": ["darkblue", "db767b1a8c1f851a28029fa81af010300fac4b9040571562ed5fe4ca980aea5f", "cef483069807c3cff93c880fed886f6979a5d1c5ac8a03bd1f120027c7cecde5", "4bd2b7f016be2aaef157d28286c17538917f2afad2e7e481956b1a2eab1b5377", "9881408813de87d25e6c83af6bc01cc63d1fa07e6152b658a605d6f189282a45"],
     "CR": ["limegreen", "2c38dbc7e6ba178c3c08fbe0f8d5843bbffd9d348d75db58de9d340718de9c05", "e55dc68cb3d1d639d3da34e7fb629f46bfb500817c5403c04cfeb8ee7aed1fb7", "8b7db097f7e342c8f6efd0c91f1cd7ffa4a07710f408bdbcd3ba7b38d041dcf8", "0267ddad29abd9f0cc913148633030f01247f98f07c335a568381d719ddf4e4e"],
-    "AG": ["aqua"],
-    "SR": ["pink"],
-    "SF": ["red"],
-    "AR": ["white"],
+    "AG": ["aqua", "a03dee4f6e9829112b3c5b9ea73ba624e4d440fe1d7e9e78a6fdc9c208873360", "c49740d62f4d85dcf0c9186b32b5f7477a54deb33e59f9503cec9b0e5f7e3247", "577e712575b76925bc3d23bba20387309b7cf3af1661bb51bc0767cb81b2b7c5", "7fe8432901c3dcb0ece730f65ad2ff07adedfc2f921753d43b52b96b6353b0dc"],
+    "SR": ["pink", "4e172e424c5817e62ff069cadd9aee6efb5413fecea17b4192156e7f13e818ff", "c53c5e4c61627b40b6ba304ab66284ffdf827330a2de8bb2765f78e7825b029b", "35eb5c466738dc9917d5f8320f5b99f12015247aaf0e512f5e4ecb547f00e0e1", "73564e467b27545084756d77ea3257d84d5794285221aac7ddbf39ed3448ad1c"],
+    "SF": ["red", "2d77a47f57c2b45925bf2e21ac20c0d269772f9121e591685318c9814ccc5e3e", "c8873ca6a05717d0b8386dae318da578dd7e881f41359f4c0b02e28bb675efa8", "a1a2a3a22f0c4b452ff6254c82e0c351b79dbd0d46f34ee631cc4f6e7f0ed7f2", "c664b56045879cf0a9936de88335c5d00e24ef4318a230228404cdb7e5f7124c"],
+    "AR": ["white", "59f1b4d04609efa9e90dd3099f32a35f3f3f05ec5e443a9c03e5b51350770358", "37bd1c4319e0ed2985d0f95641c0813c09a894953c8bae174f620fb722be3624"],
     "TM": ["turquoise"],
     "ZL": ["yellow"],
-    "WD": ["darkgreen"],
-    "TC": ["purple"],
-    "HN": ["orange"],
-    "KH": ["cream"]
+    "WD": ["darkgreen", "93bea4f8a4a3971884a83d861bd1721141f0edd7c7ff22959601be245957d11d", "4a8c6a0dcf45aa731cfffc77cf34a81d2e3a846863a4c52d97f6cd6573c7323c"],
+    "TC": ["purple", "5e371611568753ddc95a3f7980d6cb8b5578c1a5a2a0e4e190fef9e4baab3e99", "e0992653f97d3c68beb97ee22bbbc53712b3664d196a48a308266df9234c1892"],
+    "HN": ["orange", "ca3f0a3d824744072ce27944b0acbe7e7199263d2a17fa8603e1fbd2a9667723", "9bd2af211397a765b89ac3538a49914bf9a78e4d48e0d8b1f1e6ce97d19a94e1", "2fc59b9c068b985142e952cccc0a274147294b132d2a446d7d702c65bf63c5d7"],
+    "KH": ["cream", "0701b67f46b4f32568f88f1cd5b55f8b4823f03c321eb1e8b03dc3d8fe553b22", "6bd6a6d7e812617f1b342cbeec1ec4df794abecedf833905636497e6f48bd0ca"]
 }
 
 const loadSeasonalTracks = function() {
@@ -38,10 +39,16 @@ const loadSeasonalTracks = function() {
     title.style.fontSize = "70px";
     title.style.margin = "20px";
     seasonalContents.appendChild(title)
+
+    const horizontalDiv = document.createElement("div");
+    horizontalDiv.style.height = "100%";
+    horizontalDiv.style.display = "flex";
+    horizontalDiv.style.flexDirection = "row";
+    seasonalContents.appendChild(horizontalDiv);
     
     const scroll = document.createElement("div");
     scroll.className = "seasonal-tracks";
-    seasonalContents.appendChild(scroll);
+    horizontalDiv.appendChild(scroll);
 
     for (let e = 1; e < 11; e++) {
         const contentDiv = document.createElement("div");
@@ -68,10 +75,106 @@ const loadSeasonalTracks = function() {
     contentDiv.style.height = "180px";
     contentDiv.style.flexShrink = "0";
     scroll.appendChild(contentDiv);
+
+
+    const leaderboardDiv = document.createElement("div");
+    leaderboardDiv.className = "seasonal-leaderboard-outer";
+    horizontalDiv.appendChild(leaderboardDiv);
+
+    const tabDiv = document.createElement("div");
+    tabDiv.className = "seasonal-lbs-tabs";
+
+    const leaderboardContents = document.createElement("div");
+    leaderboardContents.className = "seasonal-lbs-contents";
+
+    leaderboardDiv.appendChild(tabDiv);
+    leaderboardDiv.appendChild(leaderboardContents);
+
+    const tab1Div = document.createElement("div");
+    tab1Div.className = "tab-div";
+
+    const tab1Button = document.createElement("button")
+    tab1Button.className = "tab-button selected"
+    tab1Div.appendChild(tab1Button);
+
+    tab1Button.appendChild(document.createTextNode("Solo"));
+    
+    const tab2Div = document.createElement("div");
+    tab2Div.className = "tab-div";
+
+    const tab2Button = document.createElement("button")
+    tab2Button.className = "tab-button"
+    tab2Div.appendChild(tab2Button);
+    
+    tab2Button.appendChild(document.createTextNode("Teams"));
+
+    tabDiv.appendChild(tab1Div);
+    tabDiv.appendChild(tab2Div);
 }
 
 const rankedStyles = document.createElement("style");
 rankedStyles.textContent = `
+.tab-text {
+    color: white;
+    font-size: 25px;
+    margin: 0;
+    position: absolute;
+    width: 50%;
+    left: 25%;
+    top: 25%;
+    height: 50%;
+    pointer-events: none;
+}
+.tab-button {
+    color: white;
+    font-size: 25px;
+    text-align: center;
+    cursor: pointer;
+    height: 100%;
+    background: #28346a;
+    border: none;
+    clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+    overflow: hidden;
+    position: absolute;
+    padding: 0 15px;
+}
+.tab-button::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
+    width: 0;
+    height: 100%;
+    background: #112052; /* hover color like your first example */
+    border-bottom: 2px solid #fff; /* optional border like your first button */
+    transition: width 0.1s ease-in-out;
+}
+.tab-button:hover::after {
+    width: 100%;
+}
+.tab-button.selected {
+    background: #212b58;
+}
+.tab-div {
+    height: 100%;
+    position: relative;
+    flex: 0.15;
+}
+.seasonal-lbs-contents {
+    background: #28346a;
+    width: 100%;
+    height: 100%;
+}
+.seasonal-lbs-tabs {
+    height: 6%;
+    display: flex;
+}
+.seasonal-leaderboard-outer {
+    width: 50%;
+    margin: 20px 40px;
+}
+
 .seasonal-content {
     width: 100%;
     height: 160px;
@@ -87,11 +190,12 @@ rankedStyles.textContent = `
     position: absolute;
     top: 0;
     left: 0;
+    border: none;
 }
 .seasonal-tracks {
     gap: 20px;
     padding: 20px;
-    width: 50%;
+    width: 75%;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
