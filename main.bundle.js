@@ -15,6 +15,21 @@ const seasonalTracks = {
     10: "Track10"
 }
 
+const teams = {
+    "DD": ["darkblue", "db767b1a8c1f851a28029fa81af010300fac4b9040571562ed5fe4ca980aea5f", "cef483069807c3cff93c880fed886f6979a5d1c5ac8a03bd1f120027c7cecde5", "4bd2b7f016be2aaef157d28286c17538917f2afad2e7e481956b1a2eab1b5377", "9881408813de87d25e6c83af6bc01cc63d1fa07e6152b658a605d6f189282a45"],
+    "CR": ["limegreen", "2c38dbc7e6ba178c3c08fbe0f8d5843bbffd9d348d75db58de9d340718de9c05", "e55dc68cb3d1d639d3da34e7fb629f46bfb500817c5403c04cfeb8ee7aed1fb7", "8b7db097f7e342c8f6efd0c91f1cd7ffa4a07710f408bdbcd3ba7b38d041dcf8", "0267ddad29abd9f0cc913148633030f01247f98f07c335a568381d719ddf4e4e"],
+    "AG": ["aqua"],
+    "SR": ["pink"],
+    "SF": ["red"],
+    "AR": ["white"],
+    "TM": ["turquoise"],
+    "ZL": ["yellow"],
+    "WD": ["darkgreen"],
+    "TC": ["purple"],
+    "HN": ["orange"],
+    "KH": ["cream"]
+}
+
 const loadSeasonalTracks = function() {
     const title = document.createElement("p")
     title.textContent = "---- Winter 1 ----"
@@ -41,6 +56,8 @@ const loadSeasonalTracks = function() {
         title.style.color = "white";
         title.style.margin = "10px 10px";
         title.style.fontSize = "45px";
+        title.style.zIndex = "1";
+        title.style.position = "relative";
 
         contentDiv.appendChild(title);
     }
@@ -57,7 +74,7 @@ const rankedStyles = document.createElement("style");
 rankedStyles.textContent = `
 .seasonal-content {
     width: 100%;
-    height: 180px;
+    height: 160px;
     flex-shrink: 0;
     position: relative;
 }
@@ -67,7 +84,6 @@ rankedStyles.textContent = `
     clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
     height: 100%;
     width: 100%;
-    z-index: -1;
     position: absolute;
     top: 0;
     left: 0;
@@ -2374,7 +2390,7 @@ function sendCarMultiplayerData(data, isPaused) {
               , r = n.n(i)
               , a = n(6314)
               , s = n.n(a)()(r());
-            s.push([e.id, "\n.menu {\n\tdisplay: flex;\n\z-index: -2;\n\tflex-direction: column;\n\tposition: absolute;\n\tleft: 0;\n\ttop: 0;\n\twidth: 100%;\n\theight: 100%;\n\tbackground-color: rgba(10, 10, 20, 0.8);\n\ttext-align: center;\n\ttransition: background-color 1s ease-out;\n}\n.menu.loading-screen {\n\tbackground-color: var(--surface-tertiary-color);\n}\n\n.menu > .logo {\n\tdisplay: block;\n\tmargin: 80px auto 0 auto;\n\tpadding: 0;\n\twidth: 1000px;\n\theight: 200px;\n\t-webkit-filter: drop-shadow(0 0 3px #000);\n\tfilter: drop-shadow(0 0 3px #000);\n\ttransition: opacity 0.25s ease-out;\n}\n.menu > .logo.hidden {\n\topacity: 0;\n}\n\n@media (max-width: 1300px) {\n\t.menu > .logo {\n\t\twidth: calc(100vw * (1000 / 1300));\n\t}\n}\n@media (max-width: 975px) {\n\t.menu > .logo {\n\t\twidth: calc(975px * (1000 / 1300));\n\t}\n}\n\n.menu > .warning-message {\n\tmargin: 16px auto 0 auto;\n\tmax-width: 900px;\n\tfont-size: 26px;\n\tcolor: #f66;\n}\n.menu > .warning-message > a {\n\tmargin: 0 auto;\n\tdisplay: block;\n\twidth: max-content;\n\tcolor: var(--text-color);\n\tpointer-events: auto;\n}\n\n.menu > .main-buttons-container {\n\tmargin: 0 0 140px 0;\n\tdisplay: flex;\n\tflex-grow: 1;\n\talign-items: center;\n\tjustify-content: center;\n}\n.menu > .main-buttons-container.hidden {\n\tdisplay: none;\n}\n\n.menu .button-image {\n\tdisplay: inline-block;\n\tmargin: 10px 0;\n\tpadding: 0;\n\twidth: 200px;\n\theight: 200px;\n\tpointer-events: auto;\n}\n.menu .button-image > img {\n\tmargin: 40px 40px 0 40px;\n\tpadding: 0;\n\twidth: 96px;\n\theight: 96px;\n\ttransition: transform 0.2s ease-in-out;\n\tpointer-events: none;\n}\n.menu .button-image:not(:disabled):hover > img {\n\ttransform: translateY(-10px);\n}\n@media (hover: none) {\n\t.menu .button-image:not(:disabled):hover > img {\n\t\ttransform: none;\n\t}\n}\n.menu .button-image > p {\n\tmargin: 0;\n\tpadding: 0;\n\tcolor: var(--text-color);\n\tfont-size: 27px;\n}\n\n.menu .button-image.button-spawn {\n\tanimation: button-spawn 0.5s ease-out forwards;\n\topacity: 0;\n}\n\n@keyframes button-spawn {\n\t0% {\n\t\ttransform: translateY(50px) scale(0.8);\n\t\topacity: 0;\n\t}\n\t70% {\n\t\ttransform: translateY(-10px) scale(1);\n\t\topacity: 1;\n\t}\n\t100% {\n\t\ttransform: translateY(0) scale(1);\n\t\topacity: 1;\n\t}\n}\n\n.menu > .bottom-buttons {\n\tmargin: 8px 8px 8px calc(8px + var(--safe-area-left));\n\tpadding: 0;\n\tposition: absolute;\n\tleft: 0;\n\tbottom: 0;\n}\n\n.menu > .bottom-buttons > .small {\n\tpadding: 6px 12px;\n\tclip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);\n\tfont-size: 22px;\n}\n.menu > .bottom-buttons > .small > img {\n\tvertical-align: middle;\n\twidth: 24px;\n\theight: 24px;\n}\n\n.menu > .discord-link {\n\tdisplay: block;\n\tposition: absolute;\n\tright: 0;\n\tbottom: 0;\n\tmargin: 0;\n\tpadding: 0;\n\tpointer-events: auto;\n}\n.menu > .discord-link > img {\n\tmargin: 16px calc(30px + var(--safe-area-right)) 16px 30px;\n\tpadding: 0;\n\theight: 40px;\n\ttransition: opacity 0.25s ease-out;\n}\n.menu > .discord-link > img.hidden {\n\topacity: 0;\n}\n\n.menu > .info {\n\tposition: absolute;\n\tleft: 0;\n\tbottom: 16px;\n\twidth: 100%;\n}\n.menu > .info > a {\n\tdisplay: block;\n\tmargin: 0 auto;\n\tpadding: 5px;\n\twidth: fit-content;\n\tcolor: var(--text-color);\n\ttext-decoration: none;\n\tfont-size: 20px;\n\tpointer-events: auto;\n}\n.menu > .info > a[href]:hover, .menu > .info > a[href]:focus-visible {\n\ttext-decoration: underline;\n\toutline: none;\n}\n", ""]);
+            s.push([e.id, "\n.menu {\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: absolute;\n\tleft: 0;\n\ttop: 0;\n\twidth: 100%;\n\theight: 100%;\n\tbackground-color: rgba(10, 10, 20, 0.8);\n\ttext-align: center;\n\ttransition: background-color 1s ease-out;\n}\n.menu.loading-screen {\n\tbackground-color: var(--surface-tertiary-color);\n}\n\n.menu > .logo {\n\tdisplay: block;\n\tmargin: 80px auto 0 auto;\n\tpadding: 0;\n\twidth: 1000px;\n\theight: 200px;\n\t-webkit-filter: drop-shadow(0 0 3px #000);\n\tfilter: drop-shadow(0 0 3px #000);\n\ttransition: opacity 0.25s ease-out;\n}\n.menu > .logo.hidden {\n\topacity: 0;\n}\n\n@media (max-width: 1300px) {\n\t.menu > .logo {\n\t\twidth: calc(100vw * (1000 / 1300));\n\t}\n}\n@media (max-width: 975px) {\n\t.menu > .logo {\n\t\twidth: calc(975px * (1000 / 1300));\n\t}\n}\n\n.menu > .warning-message {\n\tmargin: 16px auto 0 auto;\n\tmax-width: 900px;\n\tfont-size: 26px;\n\tcolor: #f66;\n}\n.menu > .warning-message > a {\n\tmargin: 0 auto;\n\tdisplay: block;\n\twidth: max-content;\n\tcolor: var(--text-color);\n\tpointer-events: auto;\n}\n\n.menu > .main-buttons-container {\n\tmargin: 0 0 140px 0;\n\tdisplay: flex;\n\tflex-grow: 1;\n\talign-items: center;\n\tjustify-content: center;\n}\n.menu > .main-buttons-container.hidden {\n\tdisplay: none;\n}\n\n.menu .button-image {\n\tdisplay: inline-block;\n\tmargin: 10px 0;\n\tpadding: 0;\n\twidth: 200px;\n\theight: 200px;\n\tpointer-events: auto;\n}\n.menu .button-image > img {\n\tmargin: 40px 40px 0 40px;\n\tpadding: 0;\n\twidth: 96px;\n\theight: 96px;\n\ttransition: transform 0.2s ease-in-out;\n\tpointer-events: none;\n}\n.menu .button-image:not(:disabled):hover > img {\n\ttransform: translateY(-10px);\n}\n@media (hover: none) {\n\t.menu .button-image:not(:disabled):hover > img {\n\t\ttransform: none;\n\t}\n}\n.menu .button-image > p {\n\tmargin: 0;\n\tpadding: 0;\n\tcolor: var(--text-color);\n\tfont-size: 27px;\n}\n\n.menu .button-image.button-spawn {\n\tanimation: button-spawn 0.5s ease-out forwards;\n\topacity: 0;\n}\n\n@keyframes button-spawn {\n\t0% {\n\t\ttransform: translateY(50px) scale(0.8);\n\t\topacity: 0;\n\t}\n\t70% {\n\t\ttransform: translateY(-10px) scale(1);\n\t\topacity: 1;\n\t}\n\t100% {\n\t\ttransform: translateY(0) scale(1);\n\t\topacity: 1;\n\t}\n}\n\n.menu > .bottom-buttons {\n\tmargin: 8px 8px 8px calc(8px + var(--safe-area-left));\n\tpadding: 0;\n\tposition: absolute;\n\tleft: 0;\n\tbottom: 0;\n}\n\n.menu > .bottom-buttons > .small {\n\tpadding: 6px 12px;\n\tclip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);\n\tfont-size: 22px;\n}\n.menu > .bottom-buttons > .small > img {\n\tvertical-align: middle;\n\twidth: 24px;\n\theight: 24px;\n}\n\n.menu > .discord-link {\n\tdisplay: block;\n\tposition: absolute;\n\tright: 0;\n\tbottom: 0;\n\tmargin: 0;\n\tpadding: 0;\n\tpointer-events: auto;\n}\n.menu > .discord-link > img {\n\tmargin: 16px calc(30px + var(--safe-area-right)) 16px 30px;\n\tpadding: 0;\n\theight: 40px;\n\ttransition: opacity 0.25s ease-out;\n}\n.menu > .discord-link > img.hidden {\n\topacity: 0;\n}\n\n.menu > .info {\n\tposition: absolute;\n\tleft: 0;\n\tbottom: 16px;\n\twidth: 100%;\n}\n.menu > .info > a {\n\tdisplay: block;\n\tmargin: 0 auto;\n\tpadding: 5px;\n\twidth: fit-content;\n\tcolor: var(--text-color);\n\ttext-decoration: none;\n\tfont-size: 20px;\n\tpointer-events: auto;\n}\n.menu > .info > a[href]:hover, .menu > .info > a[href]:focus-visible {\n\ttext-decoration: underline;\n\toutline: none;\n}\n", ""]);
             const o = s
         }
         ,
