@@ -9,6 +9,7 @@ let entriesDivTeam;
 let soloTitle;
 let teamsTitle;
 let top3PerTrack;
+let seasonalMultiplayerEnabled = true;
 
 
 const switchTab = function(tab) {
@@ -279,6 +280,32 @@ const blobs = await preloadSeasonalImages();
 const loadSeasonalTracks = async function() {
 
     playerData = await getSeasonalLeaderboard();
+
+    const topDiv = document.createElement("div");
+    seasonalContents.appendChild(topDiv)
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = "true";
+
+    const label = document.createElement("label");
+    label.style.color = "white";
+    label.style.padding = "10px";
+    label.style.fontSize = "20px";
+    label.appendChild(document.createTextNode(" Multiplayer Enabled"));
+
+    topDiv.appendChild(checkbox);
+    topDiv.appendChild(label);
+
+    checkbox.addEventListener("change", function () {
+        if (this.checked) {
+            seasonalMultiplayerEnabled = true;
+        } else {
+            seasonalMultiplayerEnabled = false;
+        }
+    });
+
+    topDiv.appendChild(checkbox);
     
     const title = document.createElement("p")
     title.textContent = "---- Winter 1 ----"
@@ -467,7 +494,7 @@ const loadSeasonalTracks = async function() {
         t2.textContent = player;
 
         const t3 = document.createElement("p")
-        t3.textContent = Math.round(AP);
+        t3.textContent = Math.round(AP*100)/100;
         t3.style.margin = "10px";
         t3.style.padding = "10px";
         t3.style.borderRadius = "5px";
@@ -526,6 +553,7 @@ const loadSeasonalTracks = async function() {
 
     const sortedData = calculateAveragePlacement(playerData);
     const sortedTeams = calculateTeamAverages(sortedData);
+    console.log(sortedData)
 
     let counter = 1;
     sortedData.forEach(e => {
@@ -45612,7 +45640,12 @@ function sendCarMultiplayerData(data, isPaused) {
             }
             ),( (metadata, trackData, trackCategory, trackId, trackPreviewCanvas2, loadingRanked=false, quickLoad=false) => {
                 window.multiplayerClient.inRankedMatch = loadingRanked;
-                multiplayerEnabled = true;
+                if (seasonalMultiplayerEnabled) {
+                    multiplayerEnabled = true;
+                } else {
+                    multiplayerEnabled = false;
+                }
+                
                 window.multiplayerClient.rankedMatchStartTime = null;
 
                 get(this, trackSelectionScreen, "f").hide();
