@@ -37479,9 +37479,9 @@ function sendCarMultiplayerData(data, isPaused) {
             }
             if (null == DE && (DE = get(this, lE, "f").loadTrackSelectionTab()),
             get(this, AE, "f").filter((e => e.category == DE)).every((e => "none" == e.buttonContainer.style.display)))
-                for (const e of ["official", "community", "custom"])
+                for (const e of ["official", "community", "seasonal","custom"])
                     if (get(this, AE, "f").some((t => t.category == e && "none" != t.buttonContainer.style.display))) {
-                        get(this, eE, "m", selectTrackTab).call(this, e);
+                        get(this, eE, "m", selectTrackTab).call(this, "seasonal");
                         break
                     }
         }
@@ -48242,12 +48242,12 @@ function sendCarMultiplayerData(data, isPaused) {
             loadTrackSelectionTab() {
                 try {
                     const e = get(this, uU, "f").getItem(get(dU, dU, "f", CU));
-                    if ("official" == e || "community" == e || "custom" == e)
+                    if ("official" == e || "community" == e || "seasonal" == e || "custom" == e )
                         return e
                 } catch (e) {
                     console.error(e)
                 }
-                return "official"
+                return "seasonal"
             }
         }
         dU = LU,
