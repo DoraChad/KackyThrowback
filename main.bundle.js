@@ -568,7 +568,6 @@ const loadSeasonalTracks = async function() {
 
     const sortedData = calculateAveragePlacement(playerData);
     const sortedTeams = calculateTeamAverages(sortedData);
-    console.log(sortedData)
 
     let counter = 1;
     sortedData.forEach(e => {
@@ -578,7 +577,6 @@ const loadSeasonalTracks = async function() {
 
     counter = 1;
     sortedTeams.forEach(e => {
-        console.log(e)
         createEntry(entriesDivTeam, counter, e.teamName, e.averagePlacement, false, e.color)
         counter += 1;
     })
@@ -709,6 +707,7 @@ rankedStyles.textContent = `
     position: relative;
 }
 .seasonal-lbs-contents {
+    max-height: 80%;
     background: #28346a;
     width: 100%;
     height: 100%;
