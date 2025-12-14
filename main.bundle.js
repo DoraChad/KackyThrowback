@@ -509,7 +509,11 @@ const loadSeasonalTracks = async function() {
         t2.textContent = player;
 
         const t3 = document.createElement("p")
-        t3.textContent = Math.round(AP*100)/100;
+        if (typeof AP === "string") {
+            t3.textContent = AP;
+        } else {
+            t3.textContent = Math.round(AP*100)/100;
+        }
         t3.style.margin = "10px";
         t3.style.padding = "10px";
         t3.style.borderRadius = "5px";
