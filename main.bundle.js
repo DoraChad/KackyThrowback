@@ -80,7 +80,7 @@ const teams = {
     "KT": ["Keeping track of time", "lightgrey", "5adfff7499525a01c4adcc394aa56398b8a0aab7b653d47cac4367919575289f", "00ab7a54bf83b514d190cf07786ae1c4c8a7bddaf53dd759eb308c63ab4f6afc", "bb495822a78e9e66da2040ef4bf44e347498150831442d352b7baa440fcc72d8", "d2779d5f89f8424337c4f5c156084574c86b5fb3570682a714bd66812ceee8db"],
     "BE": ["Bacon Eaters", "maroon", "a6660bf3939374fdd1699e5ff63bda7b6de71e67e69e28beb67477e0208c3e17", "90f9ddcfede5c6d4b721ec4f9ebcc21f6a5a45f8157d9b2573d63e33bedceb07"],
     "BB": ["Big Beanies", "palegreen", "1119cee228ed4a6246960413ee7095892f2b8db31ef6cd08e7ebddc1d4dddc72", "d2839684aed06f4ff47f4f7a0606ab7edece984bff87e80a56df117b150c58a1", "d2656449c4505e8e202001154addcc4ad00aad39feb03e35a66bd3486ed8c13d"],
-    "IS": ["I shidded", "brown", "92076737ff73724f621ae5cef0bbfe0e8a1ab7695aaa3b07aca28acf522b7e86", "4855ee3019704b53510975e2a8f28bc01f66dd9c2cba3a1a5aec6450926b1f4d", "4a409d4def10d60dfdb11d391130e6565217e7c864e1a407313d27bc9bd825a0", "59465804e0e2b2fb0c4ebbfc7113675a6c1ab6956c2874604d7eac1c4d4711ea"],
+    "IS": ["I shidded", "#6c4711", "92076737ff73724f621ae5cef0bbfe0e8a1ab7695aaa3b07aca28acf522b7e86", "4855ee3019704b53510975e2a8f28bc01f66dd9c2cba3a1a5aec6450926b1f4d", "4a409d4def10d60dfdb11d391130e6565217e7c864e1a407313d27bc9bd825a0", "59465804e0e2b2fb0c4ebbfc7113675a6c1ab6956c2874604d7eac1c4d4711ea"],
     "PB": ["PB Dominion", "#FFDB58", "46566d0dc03ba18acf4833442d3086d8be1c81791822ac142634446d03e91617", "a1c3f4875aef0bc1ce32f898b9d97b1fc8e296954fdfd829ffbfe7a58ad3d1cc"]
 }
 
@@ -97,6 +97,72 @@ const trackTags = {
     10: ["Fullspeed", "Medium"],
     11: ["Fullspeed", "Medium"],
 }
+
+function getTeamFromUserId(userId) {
+    for (const [teamCode, data] of Object.entries(teams)) {
+        const memberIds = data.slice(2);
+        if (memberIds.includes(userId)) {
+            return teamCode;
+        }
+    }
+    return null;
+}
+
+function logWinterTournamentStandings(sortedPlayers, sortedTeams, day = 1) {
+    const medal = i => i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
+
+    const formatPlayer = (player, index) => {
+        const avg = Number(player.averagePlacement.toFixed(2));
+        const teamTag = player.team ? `*[${player.team}]* ` : "";
+
+        if (index < 3) {
+            return `${medal(index)} ***${teamTag}${player.name}** - ${avg}`;
+        }
+        return `${medal(index)} **${teamTag}${player.name}** - ${avg}`;
+    };
+
+    const formatTeam = (team, index) => {
+        const avg = Number(team.averagePlacement.toFixed(2));
+        const teamName = team.teamName;
+
+        if (index < 3) {
+            return `${medal(index)} **${teamName}** - ${avg}`;
+        }
+        return `${medal(index)} **${teamName}** - ${avg}`;
+    };
+
+    let output = "";
+
+    output += `# Day ${day} Winter Tournament Standings:\n\n`;
+    output += `-# incomplete tracks are counted as a placement of 1000th and players in teams that havent completed any tracts are considered to have an average placement of 1000\n\n`;
+
+    output += `## Solo:\n`;
+    sortedPlayers.slice(0, 10).forEach((p, i) => {
+        output += formatPlayer(p, i) + "\n";
+    });
+
+    output += `\n## Teams:\n`;
+    sortedTeams.slice(0, 5).forEach((t, i) => {
+        output += formatTeam(t, i) + "\n";
+    });
+
+    output += `\n## World Records:\n`;
+
+    Object.entries(top3PerTrack).forEach(([trackId, runs]) => {
+        if (!runs || runs.length === 0) return;
+
+        const wr = runs[0];
+        const team = getTeamFromUserId(wr.userId)
+        const teamTag = team ? `*[${team}]* ` : "";
+        const trackName = seasonalTracks[trackId][0];
+
+        output += `**${trackName}** - ${teamTag}${wr.name}\n`;
+    });
+
+    console.log(output);
+}
+
+
 
 
 function toTrackFilename(name) {
@@ -573,6 +639,8 @@ const loadSeasonalTracks = async function() {
     const sortedData = calculateAveragePlacement(playerData);
     const sortedTeams = calculateTeamAverages(sortedData);
 
+    //logWinterTournamentStandings(sortedData, sortedTeams, 2);
+    
     let counter = 1;
     sortedData.forEach(e => {
         createEntry(entriesDivSolo, counter, e.name,  e.averagePlacement, false, null, e.team,)
