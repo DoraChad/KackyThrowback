@@ -27589,7 +27589,7 @@ function sendCarMultiplayerData(data, isPaused) {
         const fu = JSON.parse('{"rE":"0.5.2","l$":{"r":1,"M":4}}');
         const mu = "kodub"
           , gu = !1
-          , vu = "https://vps.kodub.com/"
+          , vu = "https://polyproxy.polymodloader.com"
           , wu = fu.l$.r;
         if (!Number.isSafeInteger(wu) || wu < 1)
             throw new Error("package.json beta version property must be a positive integer");
