@@ -318,6 +318,42 @@ async function getSeasonalLeaderboard() {
     return Array.from(players.values());
 }
 
+function rankPlayers(playersMap, totalTracks = 25, defaultPlacement = 1000) {
+    const playersArray = Array.from(playersMap.values());
+
+    playersArray.forEach(player => {
+        const positions = [];
+        let completedCount = 0;
+
+        for (let trackNum = 1; trackNum <= totalTracks; trackNum++) {
+            const track = player.tracks.find(t => t.trackNum === trackNum);
+
+            if (track) {
+                completedCount++;
+                positions.push(track.position);
+            } else {
+                positions.push(defaultPlacement);
+            }
+        }
+
+        const sum = positions.reduce((acc, pos) => acc + pos, 0);
+
+        player.completedTracks = completedCount;
+        player.averagePlacement = sum / totalTracks;
+    });
+
+    playersArray.sort((a, b) => {
+        if (b.completedTracks !== a.completedTracks) {
+            return b.completedTracks - a.completedTracks;
+        }
+        return a.averagePlacement - b.averagePlacement;
+    });
+
+    return playersArray;
+}
+
+
+
 function calculateAveragePlacement(playersMap, totalTracks = 25, defaultPlacement = 1000) {
     const playersArray = Array.from(playersMap.values());
 
@@ -602,7 +638,7 @@ const loadSeasonalTracks = async function() {
     tabDiv.appendChild(tab1Div);
     tabDiv.appendChild(tab2Div);
 
-    const createEntry = function(parent, rank = "Rank", player = "Player", AP = "Average Placement", hidden=false, color=null, team) {
+    const createEntry = function(parent, rank = "Rank", player = "Player", TC = "Tracks", AP = "AP", hidden=false, color=null, team) {
         const entry = document.createElement("div");
         entry.className = "seasonal-lbs-entry";
 
@@ -633,16 +669,31 @@ const loadSeasonalTracks = async function() {
         t2.textContent = player;
 
         const t3 = document.createElement("p")
-        if (typeof AP === "string") {
-            t3.textContent = AP;
+        if (typeof TC === "string") {
+            t3.textContent = TC;
         } else {
-            t3.textContent = Math.round(AP*100)/100;
+            t3.textContent = Math.round(TC*100)/100;
+            t3.style.width = "14px";
         }
         t3.style.margin = "10px";
         t3.style.padding = "10px";
         t3.style.borderRadius = "5px";
         if (rank !== "Rank") {
             t3.style.backgroundColor = "#212b58";
+        }
+
+        const t4 = document.createElement("p")
+        if (typeof AP === "string") {
+            t4.textContent = AP;
+        } else {
+            t4.textContent = Math.round(AP*100)/100;  
+            t4.style.width = "24px";    
+        }
+        t4.style.margin = "10px";
+        t4.style.padding = "10px";
+        t4.style.borderRadius = "5px";
+        if (rank !== "Rank") {
+            t4.style.backgroundColor = "#212b58";
         }
 
         entry.appendChild(t1);
@@ -668,6 +719,7 @@ const loadSeasonalTracks = async function() {
         
         d1.appendChild(t2);
         d1.appendChild(t3);
+        d1.appendChild(t4);
 
         if (hidden) {
             entry.classList.add("hidden");
@@ -681,8 +733,8 @@ const loadSeasonalTracks = async function() {
     };
 
     //header
-    soloTitle = createEntry(leaderboardContents, "Rank", "Player", "Average Placement", false,);
-    teamsTitle = createEntry(leaderboardContents, "Rank", "Team", "Average Placement", true);
+    soloTitle = createEntry(leaderboardContents, "Rank", "Player", "# Of Tracks", "AP", false,);
+    //teamsTitle = createEntry(leaderboardContents, "Rank", "Team", "Average Placement", true);
 
     entriesDivSolo = document.createElement("div");
     entriesDivSolo.className = "seasonal-lbs-entries-div";
@@ -694,8 +746,9 @@ const loadSeasonalTracks = async function() {
 
     leaderboardContents.appendChild(entriesDivTeam);
 
-    const sortedData = calculateAveragePlacement(playerData);
-    const sortedTeams = calculateTeamAverages(sortedData);
+    const sortedData = rankPlayers(playerData);
+    //const sortedData = calculateAveragePlacement(playerData);
+    //const sortedTeams = calculateTeamAverages(sortedData);
     //const sortedData = await loadVariableFromGitHub("data.json");
     //const sortedTeams = await loadVariableFromGitHub("teams.json");
     
@@ -706,6 +759,11 @@ const loadSeasonalTracks = async function() {
     
     let counter = 1;
     sortedData.forEach(e => {
+        createEntry(entriesDivSolo, counter, e.name,  e.completedTracks, e.averagePlacement, false, null, e.team,)
+        counter += 1;
+    })/*
+    let counter = 1;
+    sortedData.forEach(e => {
         createEntry(entriesDivSolo, counter, e.name,  e.averagePlacement, false, null, e.team,)
         counter += 1;
     })
@@ -714,7 +772,7 @@ const loadSeasonalTracks = async function() {
     sortedTeams.forEach(e => {
         createEntry(entriesDivTeam, counter, e.teamName, e.averagePlacement, false, e.color)
         counter += 1;
-    })
+    })*/
 }
 
 const rankedStyles = document.createElement("style");
@@ -764,6 +822,7 @@ rankedStyles.textContent = `
     flex-direction: row;
     color: white;
     align-items: center;
+    text-align: center;
 }
 .tag-div {
     width: 100%;
@@ -783,7 +842,6 @@ rankedStyles.textContent = `
     align-items: center;
 }
 .tag-img {
-    background: blue;
     height: 60%;
     background-size: cover;
     aspect-ratio: 1 / 1;
@@ -865,7 +923,8 @@ rankedStyles.textContent = `
     position: relative;
 }
 .seasonal-content > button {
-    background: #112052;
+    background-position: center;
+    background-size: cover;
     clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
     height: 100%;
     width: 100%;
