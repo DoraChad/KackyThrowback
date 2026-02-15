@@ -318,28 +318,22 @@ async function getSeasonalLeaderboard() {
     return Array.from(players.values());
 }
 
-function rankPlayers(playersMap, totalTracks = 25, defaultPlacement = 1000) {
+function rankPlayers(playersMap) {
     const playersArray = Array.from(playersMap.values());
 
     playersArray.forEach(player => {
-        const positions = [];
         let completedCount = 0;
+        let sum = 0;
 
-        for (let trackNum = 1; trackNum <= totalTracks; trackNum++) {
-            const track = player.tracks.find(t => t.trackNum === trackNum);
-
-            if (track) {
-                completedCount++;
-                positions.push(track.position);
-            } else {
-                positions.push(defaultPlacement);
-            }
-        }
-
-        const sum = positions.reduce((acc, pos) => acc + pos, 0);
+        player.tracks.forEach(track => {
+            completedCount++;
+            sum += track.position;
+        });
 
         player.completedTracks = completedCount;
-        player.averagePlacement = sum / totalTracks;
+        player.averagePlacement = completedCount > 0
+            ? sum / completedCount
+            : null;
     });
 
     playersArray.sort((a, b) => {
@@ -351,6 +345,7 @@ function rankPlayers(playersMap, totalTracks = 25, defaultPlacement = 1000) {
 
     return playersArray;
 }
+
 
 
 
