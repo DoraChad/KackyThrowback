@@ -426,7 +426,7 @@ async function preloadSeasonalImages() {
 
     const added = new Set();
     for (const [trackId, tag] of Object.entries(trackTags)) {
-        const url = `https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/images/icons/KackiestLogos_${tag}f.png`;
+        const url = `https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/images/icons/KackiestLogos_${tag}e.png`;
         if (!added.has(url)) {
             added.add(url);
             urls.push(url);
@@ -579,7 +579,7 @@ const loadSeasonalTracks = async function() {
 
         const image = document.createElement("div");
         image.className = "tag-img";
-        image.style.backgroundImage = `url("${blobs[`https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/images/icons/KackiestLogos_${trackTags[e]}f.png`]}")`;
+        image.style.backgroundImage = `url("${blobs[`https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/images/icons/KackiestLogos_${trackTags[e]}e.png`]}")`;
 
         const text = document.createElement("p")
         text.textContent = difficulties[trackTags[e]];
