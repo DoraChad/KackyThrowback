@@ -236,7 +236,7 @@ function toTrackFilename(name) {
 
 
 const getSeasonalTrackCode = async function(trackNum) {
-    const url = `https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/tracks/seasonal/${toTrackFilename(seasonalTracks[trackNum][0])}`;
+    const url = `https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/tracks/throwback/${trackNum}.track`;
 
     const res = await fetch(url);
 
