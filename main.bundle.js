@@ -384,9 +384,9 @@ function calculateTeamAverages(playersArray) {
 async function preloadSeasonalImages() {
     const urls = [];
 
-    //for (let e = 1; e <= 25; e++) {
-     //   urls.push(`https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/KackyThrowback/Wireframes_Map${e}_Blank.png`);
-    //}
+    for (let e = 1; e <= 25; e++) {
+       urls.push(`https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/images/trackCovers/${e}.png`);
+    }
 
     const added = new Set();
     for (const [trackId, tag] of Object.entries(trackTags)) {
@@ -505,7 +505,7 @@ const loadSeasonalTracks = async function() {
         viewButton.appendChild(document.createTextNode("See leaderboard"))
         
         const button = document.createElement("button");
-        //button.style.backgroundImage = `url("${blobs[`https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/SeasonalUI/Wireframes_Map${e}_Blank.png`]}")`;
+        button.style.backgroundImage = `url("${blobs[`https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/images/trackCovers/${e}.png`]}")`;
         button.addEventListener("click", async () => {
             const code = await getSeasonalTrackCode(e);
             forceLoadTrackByCode(code, true);
