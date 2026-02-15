@@ -46,36 +46,60 @@ const switchTab = function(tab) {
 }
 
 const trackIds = {
-    1: "5016b4d6d86ca9935919d08656ca4b8b9b86d573835890ac066fa1d62810a6be",
-    2: "dce185c1b72f6f6b5d7804b2202a50218e15ba5425887b0b4a1e505584bfb4c8",
-    3: "b682f4351ef3fbe886ae7e9ef3429a0424a378245a25885ebbb97150166006e5",
-    4: "88731803cdee2e285680b27889e565fa55c29d3d2c49a776a1767db9d2ad07c8",
-    5: "fa516628700ecf56d9d423a0a869903df7adffebe6e1639ffa1c82b2c5d6ae6d",
-    6: "0950dd2704d4d123283ccdb0d4416f32b67dcb1ac38665299ef4a0473be48728",
-    7: "71db944d696014e0c54e77a30ef5251fdbfadf490ac70c1641fcc18372c8baab",
-    8: "e3818e4f42e9ed3ccda896f7861017a93c0147de8791486d1bfaa176b487e408",
-    9: "026412fba2d69ca46db3cb9215138a697ef9daaa1db253951c61748e4ea1180c",
-    10: "655e9dafec265ebec9700c268039695ea6688137aca35377356ba5f7fc2ac6d7",
-    11: "c823b2eb6d4bbdcecbbdebd7c49623eb2569129458a997bfec80939792d6adb6"
+    1: "c3e51441289ff25f814f66ef417a3b8595e226f0e9f58fb8d6f147cde32bdfb5",
+    2: "b5e1aade481e67ecc021ea6303d674d186974fb1e14ecd7776a6db91ba912240",
+    3: "208aa16f45581ec3f85891331da3cbfe1b1e12d084a8ea308339a78a84317630",
+    4: "699165641bc786e790684089ec74ab5931f9e1b7862f194dad6ca63d0edcf5a5",
+    5: "1e24dd8c4b3d56ff28dc5b78a076ce6bb814b1f8758bf43f11dd5db7e1d8bdcc",
+    6: "c96aabfdd4b2ab4e6eaaf7fd36f7e036507e670d74c239da8e14879b2486ac29",
+    7: "349fd5088fd78fb83dac01ad6a9fcd9345fa13824a1f72983e917d61a7673639",
+    8: "34fcf66e1a21638a2f74b19111e9e924b599eb1f39a99e136a29e006a3e621aa",
+    9: "3af4f36126bc9711eba1ae4428150d3ec102cda4551c50520c3b297a94307195",
+    10: "36629516aaa9caafa639b8776c8c5b1ccf5dbcbf69e9aefa3fff7cb76e7c3137",
+    11: "77beaec115ee8761253c1bc657111850a0e0bfe9795a4c5c215b452a650e5610",
+    12: "8b6ebafc1cd4236d07b5020beafb043ce797bbc11f09bb123a65f2fb189e497f",
+    13: "fd3bbeebcabd07a1c07270fa2a4ba7462ddfbe3315ada8a51bde6c7cd5eeddac",
+    14: "7e84f90f61d2a05878307594651c93e0bdadba914aa3adda2680a0eff9fdae63",
+    15: "57eacf50a156910d5252f90d6e4e6ad0ceb80bfdb75b26971ea18f379504ca5a",
+    16: "b9feb48e73d977d4b9efdd1bfadf8c1e9c828cf4ef05b6fae1678bd47b5209f6",
+    17: "82ab6e6baeb6b57f935ece7db1fe7eaaeb3a3282db80bba1be05f290c06d3244",
+    18: "243dcd15d317468c423631f7876c3b56c918479109399d37e14ebd95d440fdcd",
+    19: "98ef78eff5d2f18ea49e5d5d956e415d1c36fc954703f207adac33723040a38d",
+    20: "0e341c1700744d5c285144a8ec5e5d0ddbc329962a0ab69795583ba3a9eab4ea",
+    21: "afdcb574f2adcc4a66db697915b7d844f521661fb0204339d3d54f64024e4e74",
+    22: "df47c0a4f7943967f7aa52b95d7570a5a5d3c9b4c10bf7db6071a26dd889794f",
+    23: "056020f6d628f84b62607e5dc8bb83daa721937c7b9d4c6345e09a8081df989a",
+    24: "5bd8f0764d7c4573b9b6d008b1c23e5c96cf06f5c960a2b49a1ea8149b407abd",
+    25: "dfd187afb8925aae7b6d645ca34f2fa09236e97c4d41461557011642e722cfea"
 }
 
 const seasonalTracks = {
-    1: ["Frosted Fjords", "By Zihcx"],
-    2: ["Termite Terror", "By Herny"],
-    3: ["Marvelous Marble", "By BonnieBeans"],
-    4: ["Pompeii", "By Amuq22"],
-    5: ["Lost At Sea", "By King Apollo"],
-    6: ["Imperius", "By Zihcx & An Avalugg"],
-    7: ["Across the Polyverse", "By Big Beans Build Guild"],
-    8: ["Ye Olde Castle", "By An Avalugg"],
+    1: ["Kackiest Kacky #1", ""],
+    2: ["Termite Terror", ""],
+    3: ["Marvelous Marble", ""],
+    4: ["Pompeii", ""],
+    5: ["Lost At Sea", ""],
+    6: ["Imperius", ""],
+    7: ["Across the Polyverse", ""],
+    8: ["Ye Olde Castle", ""],
     9: ["Medieval Meadow", "By 2xi & Herny"],
     10: ["Circle of Life", "By Bruther"],
     11: ["Arrival", "By Skrdh"]
 }
 
+const difficulties = {
+    1: "Easy",
+    2: "High Easy",
+    3: "Low Medium",
+    4: "Medium",
+    5: "High Medium",
+    6: "Low Hard",
+    7: "Hard"
+}
+
 //its public token no worries
 const teams = {
-    "DD": ["Dutch Demolishers", "darkblue", "db767b1a8c1f851a28029fa81af010300fac4b9040571562ed5fe4ca980aea5f", "cef483069807c3cff93c880fed886f6979a5d1c5ac8a03bd1f120027c7cecde5", "4bd2b7f016be2aaef157d28286c17538917f2afad2e7e481956b1a2eab1b5377", "9881408813de87d25e6c83af6bc01cc63d1fa07e6152b658a605d6f189282a45"],
+    /*"DD": ["Dutch Demolishers", "darkblue", "db767b1a8c1f851a28029fa81af010300fac4b9040571562ed5fe4ca980aea5f", "cef483069807c3cff93c880fed886f6979a5d1c5ac8a03bd1f120027c7cecde5", "4bd2b7f016be2aaef157d28286c17538917f2afad2e7e481956b1a2eab1b5377", "9881408813de87d25e6c83af6bc01cc63d1fa07e6152b658a605d6f189282a45"],
     "CR": ["Christmas Rumshots", "limegreen", "2c38dbc7e6ba178c3c08fbe0f8d5843bbffd9d348d75db58de9d340718de9c05", "e55dc68cb3d1d639d3da34e7fb629f46bfb500817c5403c04cfeb8ee7aed1fb7", "8b7db097f7e342c8f6efd0c91f1cd7ffa4a07710f408bdbcd3ba7b38d041dcf8", "0267ddad29abd9f0cc913148633030f01247f98f07c335a568381d719ddf4e4e"],
     "AG": ["Air-Brake Gangsters", "aqua", "a03dee4f6e9829112b3c5b9ea73ba624e4d440fe1d7e9e78a6fdc9c208873360", "c49740d62f4d85dcf0c9186b32b5f7477a54deb33e59f9503cec9b0e5f7e3247", "577e712575b76925bc3d23bba20387309b7cf3af1661bb51bc0767cb81b2b7c5", "7fe8432901c3dcb0ece730f65ad2ff07adedfc2f921753d43b52b96b6353b0dc"],
     "SR": ["My sister is related to me", "pink", "4e172e424c5817e62ff069cadd9aee6efb5413fecea17b4192156e7f13e818ff", "c53c5e4c61627b40b6ba304ab66284ffdf827330a2de8bb2765f78e7825b029b", "35eb5c466738dc9917d5f8320f5b99f12015247aaf0e512f5e4ecb547f00e0e1", "73564e467b27545084756d77ea3257d84d5794285221aac7ddbf39ed3448ad1c"],
@@ -95,24 +119,38 @@ const teams = {
     "BB": ["Big Beanies", "palegreen", "1119cee228ed4a6246960413ee7095892f2b8db31ef6cd08e7ebddc1d4dddc72", "d2839684aed06f4ff47f4f7a0606ab7edece984bff87e80a56df117b150c58a1", "d2656449c4505e8e202001154addcc4ad00aad39feb03e35a66bd3486ed8c13d"],
     "IS": ["I shidded", "#6c4711", "92076737ff73724f621ae5cef0bbfe0e8a1ab7695aaa3b07aca28acf522b7e86", "4855ee3019704b53510975e2a8f28bc01f66dd9c2cba3a1a5aec6450926b1f4d", "4a409d4def10d60dfdb11d391130e6565217e7c864e1a407313d27bc9bd825a0", "59465804e0e2b2fb0c4ebbfc7113675a6c1ab6956c2874604d7eac1c4d4711ea"],
     "PB": ["PB Dominion", "#FFDB58", "46566d0dc03ba18acf4833442d3086d8be1c81791822ac142634446d03e91617", "a1c3f4875aef0bc1ce32f898b9d97b1fc8e296954fdfd829ffbfe7a58ad3d1cc"]
-}
+*/}
 
 const trackTags = {
-    1: ["Fullspeed", "Easy"],
-    2: ["Technical", "Medium"],
-    3: ["Fullspeed", "Hard"],
-    4: ["Technical", "Easy"],
-    5: ["Fullspeed", "Easy"],
-    6: ["Speedfun", "Medium"],
-    7: ["Technical", "Hard"],
-    8: ["Fullspeed", "Easy"],
-    9: ["Speedfun", "Medium"],
-    10: ["Fullspeed", "Medium"],
-    11: ["Fullspeed", "Medium"],
+    1: 1,
+    2: 7,
+    3: 4,
+    4: 3,
+    5: 3,
+    6: 2,
+    7: 4,
+    8: 7,
+    9: 1,
+    10: 5,
+    11: 2,
+    12: 4,
+    13: 5,
+    14: 4,
+    15: 2,
+    16: 6,
+    17: 1,
+    18: 1,
+    19: 4,
+    20: 5,
+    21: 6,
+    22: 5,
+    23: 4,
+    24: 5,
+    25: 7
 }
 
 async function loadVariableFromGitHub(url) {
-    const response = await fetch(`https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/${url}`);
+    const response = await fetch(`https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/${url}`);
 
     if (!response.ok) {
         throw new Error(`Failed to fetch file: ${response.status}`);
@@ -198,7 +236,7 @@ function toTrackFilename(name) {
 
 
 const getSeasonalTrackCode = async function(trackNum) {
-    const url = `https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/tracks/seasonal/${toTrackFilename(seasonalTracks[trackNum][0])}`;
+    const url = `https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/tracks/seasonal/${toTrackFilename(seasonalTracks[trackNum][0])}`;
 
     const res = await fetch(url);
 
@@ -232,8 +270,8 @@ function getTop3Data(allData) {
 
 async function getSeasonalLeaderboard() {
     const urls = [];
-    for (let trackNum = 1; trackNum <= 11; trackNum++) {
-        const url = `https://polyproxy.orangy.cfd/leaderboard?version=0.5.2&trackId=${trackIds[trackNum]}&skip=0&amount=400&onlyVerified=false`;
+    for (let trackNum = 1; trackNum <= 25; trackNum++) {
+        const url = `https://polyproxy.polymodloader.com/leaderboard?version=0.5.2&trackId=${trackIds[trackNum]}&skip=0&amount=400&onlyVerified=false`;
         urls.push(url);
     }
 
@@ -280,7 +318,7 @@ async function getSeasonalLeaderboard() {
     return Array.from(players.values());
 }
 
-function calculateAveragePlacement(playersMap, totalTracks = 11, defaultPlacement = 1000) {
+function calculateAveragePlacement(playersMap, totalTracks = 25, defaultPlacement = 1000) {
     const playersArray = Array.from(playersMap.values());
 
     playersArray.forEach(player => {
@@ -344,20 +382,22 @@ function calculateTeamAverages(playersArray) {
 
 
 async function preloadSeasonalImages() {
+    return;
+
+    //CHANGEEE
+
     const urls = [];
 
-    for (let e = 1; e <= 11; e++) {
-        urls.push(`https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/SeasonalUI/Wireframes_Map${e}_Blank.png`);
+    for (let e = 1; e <= 25; e++) {
+        urls.push(`https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/KackyThrowback/Wireframes_Map${e}_Blank.png`);
     }
 
     const added = new Set();
-    for (let e = 1; e <= 11; e++) {
-        for (let tag of trackTags[e]) {
-            const url = `https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/SeasonalUI/Wireframes_Icon_${tag}.png`;
-            if (!added.has(url)) {
-                added.add(url);
-                urls.push(url);
-            }
+    for (const [trackId, tag] of Object.entries(trackTags)) {
+        const url = `https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/KackyThrowback/Wireframes_Icon_${tag}.png`;
+        if (!added.has(url)) {
+            added.add(url);
+            urls.push(url);
         }
     }
 
@@ -382,7 +422,7 @@ const blobs = await preloadSeasonalImages();
 
 const loadSeasonalTracks = async function() {
 
-    //playerData = await getSeasonalLeaderboard();
+    playerData = await getSeasonalLeaderboard();
 
     const topDiv = document.createElement("div");
     seasonalContents.appendChild(topDiv)
@@ -413,7 +453,7 @@ const loadSeasonalTracks = async function() {
     topDiv.appendChild(checkbox);
     
     const title = document.createElement("p")
-    title.textContent = "---- Winter 1 ----"
+    title.textContent = "---- Kacky Throwback ----"
     title.style.textAlign = "center";
     title.style.color = "white";
     title.style.fontSize = "70px";
@@ -430,7 +470,7 @@ const loadSeasonalTracks = async function() {
     scroll.className = "seasonal-tracks";
     horizontalDiv.appendChild(scroll);
 
-    for (let e = 1; e < 12; e++) {
+    for (let e = 1; e < 26; e++) {
         const contentDiv = document.createElement("div");
         contentDiv.className = "seasonal-content";
         scroll.appendChild(contentDiv);
@@ -469,7 +509,7 @@ const loadSeasonalTracks = async function() {
         viewButton.appendChild(document.createTextNode("See leaderboard"))
         
         const button = document.createElement("button");
-        button.style.backgroundImage = `url("${blobs[`https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/SeasonalUI/Wireframes_Map${e}_Blank.png`]}")`;
+        //button.style.backgroundImage = `url("${blobs[`https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/SeasonalUI/Wireframes_Map${e}_Blank.png`]}")`;
         button.addEventListener("click", async () => {
             const code = await getSeasonalTrackCode(e);
             forceLoadTrackByCode(code, true);
@@ -477,7 +517,7 @@ const loadSeasonalTracks = async function() {
         contentDiv.appendChild(button);
 
         const title = document.createElement("p");
-        title.textContent = seasonalTracks[e][0];
+        title.textContent = `Kackiest Kacky #${e}`;
         title.style.color = "white";
         title.style.margin = "8px 20px";
         title.style.fontSize = "45px";
@@ -486,7 +526,7 @@ const loadSeasonalTracks = async function() {
         title.style.pointerEvents = "none";
 
         const author = document.createElement("p");
-        author.textContent = seasonalTracks[e][1];
+        author.textContent = "";
         author.style.color = "white";
         author.style.margin = "0px 20px";
         author.style.fontSize = "18px";
@@ -502,23 +542,20 @@ const loadSeasonalTracks = async function() {
         tagDiv.style.pointerEvents = "none";
         tagDiv.className = "tag-div";
 
-        for (let i = 0; i < 2; i++) {
+        const tag = document.createElement("div");
+        tag.className = "tag";
 
-            const tag = document.createElement("div");
-            tag.className = "tag";
-    
-            const image = document.createElement("div");
-            image.className = "tag-img";
-            image.style.backgroundImage = `url("${blobs[`https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/SeasonalUI/Wireframes_Icon_${trackTags[e][i]}.png`]}")`;
-    
-            const text = document.createElement("p")
-            text.textContent = trackTags[e][i];
-            text.className = "tag-text";
-    
-            tag.appendChild(image);
-            tag.appendChild(text);
-            tagDiv.appendChild(tag);
-        }
+        const image = document.createElement("div");
+        image.className = "tag-img";
+        image.style.backgroundImage = `url("${blobs[`https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/images/icons/KackiestLogos_${trackTags[e]}f.png`]}")`;
+
+        const text = document.createElement("p")
+        text.textContent = difficulties[trackTags[e]];
+        text.className = "tag-text";
+
+        tag.appendChild(image);
+        tag.appendChild(text);
+        tagDiv.appendChild(tag);
 
         contentDiv.appendChild(tagDiv);
     }
@@ -541,7 +578,7 @@ const loadSeasonalTracks = async function() {
     const leaderboardContents = document.createElement("div");
     leaderboardContents.className = "seasonal-lbs-contents";
 
-    leaderboardDiv.appendChild(tabDiv);
+    //leaderboardDiv.appendChild(tabDiv);
     leaderboardDiv.appendChild(leaderboardContents);
 
     const tab1Div = document.createElement("div");
@@ -592,6 +629,7 @@ const loadSeasonalTracks = async function() {
         d1.style.flexDirection = "row";
         d1.style.padding = "10px 0 10px 10px";
         d1.style.width = "100%";
+        d1.style.alignItems = "center";
 
         t2.style.padding = "10px";
         t2.style.width = "100%";
@@ -660,10 +698,10 @@ const loadSeasonalTracks = async function() {
 
     leaderboardContents.appendChild(entriesDivTeam);
 
-    //const sortedData = calculateAveragePlacement(playerData);
-    //const sortedTeams = calculateTeamAverages(sortedData);
-    const sortedData = await loadVariableFromGitHub("data.json");
-    const sortedTeams = await loadVariableFromGitHub("teams.json");
+    const sortedData = calculateAveragePlacement(playerData);
+    const sortedTeams = calculateTeamAverages(sortedData);
+    //const sortedData = await loadVariableFromGitHub("data.json");
+    //const sortedTeams = await loadVariableFromGitHub("teams.json");
     
    // saveVariableToFile(sortedData, "data.json");
     //saveVariableToFile(sortedTeams, "teams.json");
@@ -751,7 +789,6 @@ rankedStyles.textContent = `
 .tag-img {
     background: blue;
     height: 60%;
-    background-image: url(https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/SeasonalUI/Wireframes_Icon_%20Speedfun.png);
     background-size: cover;
     aspect-ratio: 1 / 1;
     background-position: center;
@@ -832,8 +869,7 @@ rankedStyles.textContent = `
     position: relative;
 }
 .seasonal-content > button {
-    background-image: url(https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/SeasonalUI/Wireframes_Map3_Blank.png);
-    background-size: cover;
+    background: #112052;
     clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
     height: 100%;
     width: 100%;
@@ -37741,7 +37777,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 
                 seasonalTab = document.createElement("button");
                 seasonalTab.className = "button seasonal",
-                seasonalTab.append(document.createTextNode(get(this, nE, "f").get("Seasonal Tournament"))),
+                seasonalTab.append(document.createTextNode(get(this, nE, "f").get("Kacky Throwback"))),
                 seasonalTab.addEventListener("click", ( () => {
                     get(this, iE, "f").playUIClick(),
                     get(this, eE, "m", selectTrackTab).call(this, "seasonal")
@@ -46179,7 +46215,7 @@ function sendCarMultiplayerData(data, isPaused) {
         ,
         showMainMenu = function() {
             if (null != get(this, sN, "f")) {
-                get(this, sN, "f").textContent = "Seasonal Tournament: Winter 1";
+                get(this, sN, "f").textContent = "";
                 const e = document.createElement("a");
                 e.href = QT(),
                 e.textContent = QT(),
