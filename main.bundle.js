@@ -382,19 +382,15 @@ function calculateTeamAverages(playersArray) {
 
 
 async function preloadSeasonalImages() {
-    return;
-
-    //CHANGEEE
-
     const urls = [];
 
-    for (let e = 1; e <= 25; e++) {
-        urls.push(`https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/KackyThrowback/Wireframes_Map${e}_Blank.png`);
-    }
+    //for (let e = 1; e <= 25; e++) {
+     //   urls.push(`https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/KackyThrowback/Wireframes_Map${e}_Blank.png`);
+    //}
 
     const added = new Set();
     for (const [trackId, tag] of Object.entries(trackTags)) {
-        const url = `https://raw.githubusercontent.com/DoraChad/SeasonalPT/refs/heads/main/KackyThrowback/Wireframes_Icon_${tag}.png`;
+        const url = `https://raw.githubusercontent.com/DoraChad/KackyThrowback/refs/heads/main/images/icons/KackiestLogos_${tag}f.png`;
         if (!added.has(url)) {
             added.add(url);
             urls.push(url);
