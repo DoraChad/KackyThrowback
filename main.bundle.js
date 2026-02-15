@@ -34646,7 +34646,7 @@ function sendCarMultiplayerData(data, isPaused) {
                 e[t] |= i >> 8 - s
             }
         }
-        var sunDirectionM, sunHeightM, set = function(e, t, n, i, r) {
+        var sunDirectionM, set = function(e, t, n, i, r) {
             if ("m" === i)
                 throw new TypeError("Private method is not writable");
             if ("a" === i && !r)
@@ -34663,22 +34663,17 @@ function sendCarMultiplayerData(data, isPaused) {
             return "m" === n ? i : "a" === n ? i.call(e) : i ? i.value : t.get(e)
         };
         class SunDirection1 {
-            constructor(direction=28, height=52) {
+            constructor(direction=28) {
                 sunDirectionM.set(this, void 0);
-                sunHeightM.set(this, void 0);
                 if (!(Number.isSafeInteger(direction) && direction >= 0 && direction < 180))
                     throw new Error("Representation is not a safe integer or is out of range");
-                set(this, sunDirectionM, direction, "f"),
-                set(this, sunHeightM, height, "f")
+                set(this, sunDirectionM, direction, "f")
             }
             clone() {
                 return new SunDirection1(get(this, sunDirectionM, "f"))
             }
             toDegrees() {
                 return 2 * get(this, sunDirectionM, "f")
-            }
-            heightToDegrees() {
-                return 2 * get(this, sunHeightM, "f")
             }
             static fromDegrees(e) {
                 const t = Math.round(e / 2 % 180);
@@ -34691,41 +34686,17 @@ function sendCarMultiplayerData(data, isPaused) {
             }
             getSunPosition() {
                 const directionDeg = 2 * get(this, sunDirectionM, "f");
-                const heightDeg = get(this, sunHeightM, "f");
                 const azimuth = directionDeg * (Math.PI / 180);
-                const elevation = heightDeg * (Math.PI / 180);
-                const x = Math.cos(elevation) * Math.cos(azimuth);
-                const y = Math.sin(elevation);
-                const z = Math.cos(elevation) * Math.sin(azimuth);
-                return new Vector3(x, y, z).normalize();
-            }
-            getHorizonColor() {
-                const heightDeg = get(this, sunHeightM, "f");
-                const sunY = Math.sin(heightDeg * (Math.PI / 180));
-                const defaultHorizon = new Vector3(255.0 / 255.0, 255.0 / 255.0, 255.0 / 255.0);
-                const lowSunHorizon = new Vector3(255.0 / 255.0, 100.0 / 255.0, 0.0 / 255.0);
-
-                const horizonColor = defaultHorizon.multiplyScalar(sunY).add(lowSunHorizon.multiplyScalar(1 - sunY));
-                return horizonColor;
-            }
-            getZenithColor() {
-                const heightDeg = get(this, sunHeightM, "f");
-                const sunY = Math.sin(heightDeg * (Math.PI / 180));
-                const defaultZenith = new Vector3(5.0 / 255.0, 140.0 / 255.0, 255.0 / 255.0);
-                const lowSunZenith = new Vector3(0,0,0);
-
-                const zenithColor = defaultZenith.multiplyScalar(sunY).add(lowSunZenith.multiplyScalar(1 - sunY));
-                return zenithColor;
+                const x = Math.cos(azimuth);
+                const z = Math.sin(azimuth);
+                return new Vector3(x, .78, z).normalize();
             }
             get representation() {
                 return get(this, sunDirectionM, "f")
             }
-            get heightRepresentation() {
-                return get(this, sunHeightM, "f")
-            }
+
         }
         sunDirectionM = new WeakMap;
-        sunHeightM = new WeakMap;
         const SunDirection = SunDirection1;
         var PA;
         !function(e) {
@@ -35512,7 +35483,6 @@ function sendCarMultiplayerData(data, isPaused) {
             !Number.isSafeInteger(sunAngle) || sunAngle < 0 || sunAngle >= 180)
                 return null;
             const trackData = new TrackData(i,new SunDirection(sunAngle));
-            let sunHeight = null;
 
             if (t.length - n < 9)
                 return null;
@@ -35591,16 +35561,10 @@ function sendCarMultiplayerData(data, isPaused) {
                         if (t.length - n < 4)
                             return null;
                         v = t[n + 0] | t[n + 1] << 8 | t[n + 2] << 16;
-                        if (!sunHeight && (t[n + 3] & 255) > 0) {
-                            sunHeight = (t[n + 3] & 255) - 1;
-                        }
                         n += 4
                     }
                     trackData.addPart(i, r, u, e, p, f, m, g, v)
                 }
-            }
-            if (sunHeight) {
-                trackData.sunDirection = new SunDirection(sunAngle, sunHeight);
             }
             return trackData
         }
@@ -38696,33 +38660,6 @@ function sendCarMultiplayerData(data, isPaused) {
                 }
                 )),
                 S.appendChild(sunDirectionInput);
-
-
-                 const sunHeightLabel = document.createElement("label");
-                sunHeightLabel.className = "title",
-                sunHeightLabel.append(document.createTextNode(t.get("Sun height") + " (")),
-                S.appendChild(sunHeightLabel);
-                const sunHeightValue = document.createTextNode(a.sunDirection.heightToDegrees().toString());
-                sunHeightLabel.appendChild(sunHeightValue),
-                sunHeightLabel.append(document.createTextNode("°)"));
-                let meshTimeoutId = null;
-                const sunHeightInput = document.createElement("input");
-                sunHeightInput.type = "range",
-                sunHeightInput.min = "2",
-                sunHeightInput.max = "358",
-                sunHeightInput.step = "2",
-                sunHeightInput.value = a.sunDirection.heightToDegrees().toString(),
-                sunHeightInput.addEventListener("input", ( () => {
-                    a.sunDirection = SunDirection.fromDegrees2(parseInt(sunDirectionInput.value, 10), parseInt(sunHeightInput.value, 10)),
-                    sunHeightValue.textContent = sunHeightInput.value,
-                    null == meshTimeoutId && (meshTimeoutId = setTimeout(( () => {
-                        a.generateMeshes(),
-                        meshTimeoutId = null
-                    }
-                    ), 100))
-                }
-                )),
-                S.appendChild(sunHeightInput);
 
 
                 const P = document.createElement("div");
