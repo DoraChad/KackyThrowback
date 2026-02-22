@@ -1,3 +1,4 @@
+
 let seasonalScroll;
 let seasonalContents;
 let seasonalTab;
@@ -741,13 +742,13 @@ const loadSeasonalTracks = async function() {
 
     leaderboardContents.appendChild(entriesDivTeam);
 
-    const sortedData = rankPlayers(playerData);
+    //const sortedData = rankPlayers(playerData);
     //const sortedData = calculateAveragePlacement(playerData);
     //const sortedTeams = calculateTeamAverages(sortedData);
-    //const sortedData = await loadVariableFromGitHub("data.json");
+    const sortedData = await loadVariableFromGitHub("data.json");
     //const sortedTeams = await loadVariableFromGitHub("teams.json");
     
-   // saveVariableToFile(sortedData, "data.json");
+    //saveVariableToFile(sortedData, "data.json");
     //saveVariableToFile(sortedTeams, "teams.json");
 
     //logWinterTournamentStandings(sortedData, sortedTeams, 4);
@@ -1814,7 +1815,7 @@ class MultiplayerClient {
     }
 
     connect() {
-        try {
+        /*try {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             this.ws = new WebSocket(`${protocol}//${"polyranked.cwcinc.dev"}`);
             // this.ws = new WebSocket("https://polytrackmultiplayer.onrender.com/");
@@ -1853,7 +1854,7 @@ class MultiplayerClient {
         } catch (error) {
             this.updateStatus('Failed to connect', 'error');
             console.error('Connection error:', error);
-        }
+        }*/
     }
 
     attemptReconnect() {
